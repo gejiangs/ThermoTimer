@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AD058F6523680A7C007D1892 /* NSData+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = AD058F6423680A7C007D1892 /* NSData+Utils.m */; };
 		AD0E764E1B7DB98A0094B6B5 /* PNLineChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = AD0E764B1B7DB98A0094B6B5 /* PNLineChartView.m */; };
 		AD0E764F1B7DB98A0094B6B5 /* PNPlot.m in Sources */ = {isa = PBXBuildFile; fileRef = AD0E764D1B7DB98A0094B6B5 /* PNPlot.m */; };
 		AD1A3AD81B7C3822009177A4 /* SystemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AD1A3AD71B7C3822009177A4 /* SystemManager.m */; };
@@ -167,6 +168,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AD058F6323680A7C007D1892 /* NSData+Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+Utils.h"; sourceTree = "<group>"; };
+		AD058F6423680A7C007D1892 /* NSData+Utils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+Utils.m"; sourceTree = "<group>"; };
 		AD0E764A1B7DB98A0094B6B5 /* PNLineChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PNLineChartView.h; sourceTree = "<group>"; };
 		AD0E764B1B7DB98A0094B6B5 /* PNLineChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PNLineChartView.m; sourceTree = "<group>"; };
 		AD0E764C1B7DB98A0094B6B5 /* PNPlot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PNPlot.h; sourceTree = "<group>"; };
@@ -638,6 +641,8 @@
 				AD82C48B1BDF5941009BF13B /* Language.m */,
 				AD4ED72D1B841C4000EFA4B6 /* ByteUtil.h */,
 				AD4ED72E1B841C4000EFA4B6 /* ByteUtil.m */,
+				AD058F6323680A7C007D1892 /* NSData+Utils.h */,
+				AD058F6423680A7C007D1892 /* NSData+Utils.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -1337,6 +1342,7 @@
 				AD4CB7EF1B7873E10036FF69 /* AFHTTPSessionManager.m in Sources */,
 				AD4CB8251B7873E10036FF69 /* SDWebImageCompat.m in Sources */,
 				AD4CB7CF1B7873E10036FF69 /* UIImage+Utils.m in Sources */,
+				AD058F6523680A7C007D1892 /* NSData+Utils.m in Sources */,
 				AD4CB6261B784CDD0036FF69 /* main.m in Sources */,
 				AD82C4891BDF58C0009BF13B /* BlueViewController.m in Sources */,
 				AD3E5E801C0310A90029A1BE /* NormalTempView.m in Sources */,

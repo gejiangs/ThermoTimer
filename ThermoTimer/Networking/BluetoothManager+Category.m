@@ -173,7 +173,7 @@
     }
     
 //    NSLog(@"收到的数据：%@",characteristic.value);
-    NSString *receiveString = [[characteristic.value description] lowercaseString];
+    NSString *receiveString = [characteristic.value hexToString];
     receiveString = [receiveString stringByReplacingOccurrencesOfString:@" " withString:@""];
     receiveString = [receiveString stringByReplacingOccurrencesOfString:@"<" withString:@""];
     receiveString = [receiveString stringByReplacingOccurrencesOfString:@">" withString:@""];

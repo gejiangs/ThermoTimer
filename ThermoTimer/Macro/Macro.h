@@ -29,5 +29,6 @@
 #include "UIColor+Utils.h"
 #include "UIImage+Utils.h"
 #include "NSObject+Utils.h"
+#include "NSData+Utils.h"
 
 #endif
