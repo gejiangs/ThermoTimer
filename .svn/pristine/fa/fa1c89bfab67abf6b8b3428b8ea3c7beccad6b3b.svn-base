@@ -1,0 +1,157 @@
+/*
+ Localizable.strings
+ ThermoTimer
+ 
+ Created by gejiangs on 15/8/10.
+ Copyright (c) 2015年 gejiangs. All rights reserved.
+ */
+
+/*******Home********/
+"image_four_name"           = "imageFour_en";
+"image_two_name"            = "imageTwo_en";
+"image_one_name"            = "imageOne_en";
+"home_bg_top"               = "home_bg_top_en";
+"Welcome"                   = "Welcome";
+"NoEnableDevice"            = "无可用设备";
+"HomeTitle"                 = "";
+"FoodTitle"                 = "Test Objects";
+"FoodAddTitle"              = "Temperature Setting";
+"FoodTipTitle"              = "Title";
+"FoodPlaceTitle"            = "New default";
+"ConnectTitle"              = "Connecting the device";
+"ConnectNoFindTitle"        = "我们无法在附近找到 T2 产品";
+"ConnectOpenBlue"           = "Step:Turn on bluetoolh";
+"ConnectOpenT2"             = "| Turn on T2 product";
+"BlueTitle"                 = "Options";
+"Search"                    = "Search";
+"2ProbGrill"                = "Two probes";
+"3ProbGrill"                = "3 Probes";
+"4ProbGrill"                = "4 Probes";
+"MiniGrill"                 = "Single probe";
+"NormalTemp"                = "Surrounding Temperature";
+"textLabel"                 = "This is a photo illustration";
+"BlueNotOpenTip"            = "Bluetooth is off,please turn on";
+"OpenBlue"                  = "Turn on bluetooth";
+
+"TempIndoor"                = "INDOOR";
+"TempBeef"                  = "BEEF";
+"TempLamb"                  = "LAMB";
+"TempChicken"               = "CHICKEN";
+"TempTurkey"                = "TURKEY";
+"TempPork"                  = "PORK";
+"TempFish"                  = "FISH";
+"TempHambuge"               = "BURGER";
+
+"TempSetting"               = "Setting Degree";
+"TempWelldone"              = "Welldone";
+"TempRare"                  = "Rare";
+"TempMedRare"               = "MedRare";
+"TempMeddium"               = "Meddium";
+"TempMedAll"                = "Well-done";
+"TempComfortable"           = "Comfortable";
+"CurveSet"                  = "Line Diagram";
+"TimeSet"                   = "Timer Setting";
+"CurrentTemp"               = "Current Temperature";
+"GoalTemp"                  = "Ideal temperature";
+"CountTime"                 = "Count down";
+
+"DeviceNeedle"              = "Probe";
+"CountTimeTitle"            = "Timer";
+"TempSettingTitle"          = "Temperature Setting";
+"TimeNoSetTitle"            = "Default";
+"DeviceCountTimeEnd"        = "    Probe%@-Timer is OK！";
+"CountTimeEnd"              = "    Timer is OK！";
+"TempAlarm"                 = "    Done！";
+"TempIndexAlarm"            = "    Probe%@ temperature alarm！";
+"Time"                      = "Time";
+"Temperature"               = "Temp";
+"TipInputName"              = "Please input the name of food";
+"TipInputTemp"              = "Please input the temperature of food";
+
+/*********Button*********/
+"StartCooking"              = "OK";
+"Delete"                    = "Delete";
+"Start"                     = "Start";
+"Reset"                     = "Reset";
+"Save"                      = "Save";
+"Fine"                      = "OK";
+
+/*******Setting********/
+
+"SettingTitle"              = "Setting";
+"SettingTempUnit"           = "Temperature units";
+"SettingTimerAlarm"         = "Timer Alarm";
+"SettingTempAlarm"          = "Temperature Alarm";
+"SaveSuccess"               = "Save Success";
+"Alarm_Ringtone_1"          = "Ringtone_1";
+"Alarm_Ringtone_2"          = "Ringtone_2";
+"Alarm_Ringtone_3"          = "Ringtone_3";
+"Alarm_Ringtone_4"          = "Ringtone_4";
+
+/*******About********/
+"AboutTitle"                = "About";
+"Version"                   = "Version";
+"Email"                     = "Email:";
+"Website"                   = "Website:";
+"ProductDesc1"              = "        This product is connected to single probe of T2 prodcut. The alarm will remind you when the food is ready or time is up. It can be only as a timer;it also with many cooking types could be choosed quickly, and also could be free setting the cooking temperature and timing~!";
+"ProductDesc2"              = "        This product is connected to two probes of T2 device. The alarm will reminds you when the food is ready or time is up. It can be only as a timer;but also with many cooking types could be choosed quickly, and also could be free setting of cooking temperature and timing~!";
+"ProductDesc4"              = "        This product is connected to four probes of T2 product. The alarm will remind you when the food is ready or time is up. It can be only as a timer;it also with many cooking types could be choosed quickly, and also could be free setting the cooking temperature and timing~!";
+"ProductIcon1"              = "Bluetooth";
+"ProductIcon2"              = "The battery";
+"ProductIcon3"              = "Temperature setting";
+"ProductIcon4"              = "The alarm";
+"ProductIcon5"              = "The temperature curve";
+"ProductIcon6"              = "The timer";
+
+
+/*******Operation********/
+"OperationTitle"            = "Manual";
+"OperationTitle1"           = "Download from the App store;";
+"OperationTitle2"           = "Start the App and connect with bluetooth";
+"OperationTitle3"           = "Connect T2 probes";
+"OperationTitle4"           = "Set up the temperature and timer,select test objects or default";
+"OperationTitle5"           = "Hear the alarm,food is ready and be mindful to alarm";
+"OperationTitle6"           = "Warning";
+"OperationDesc1"            = "Download        from the App store;";
+"OperationDesc2"            = "";
+"OperationDesc3"            = "";
+"OperationDesc4"            = "";
+"OperationDesc5"            = "Alarm reminds you when the temperature reaches to idea temperature;";
+"OperationDesc6"            = "Wash probes thoroughly after using and dry it with towel also put the device away from kids to avoid accident;";
+
+
+
+/*******Timer********/
+"TimerTitle"                = "Timer";
+"TimerSetError"             = "Timer cannot be set to zero";
+
+
+
+
+/*******More*********/
+"MoreTitle"                 = "More";
+"MoreClose"                 = "Close";
+"MoreTimer"                 = "Timer";
+"MoreSetting"               = "Setting";
+"MoreOperation"             = "Manual";
+"MoreSearch"                = "Re-serach";
+"MoreAbout"                 = "About";
+
+
+
+/********Tip*********/
+"Connecting"                = "Connecting...";
+"ConnectFailure"            = "Connection failed";
+"ConnectSuccess"            = "Connection success";
+"Searching"                 = "Searching...";
+"Tip"                       = "Notification";
+"Cancel"                    = "Cancel";
+"OK"                        = "OK";
+"NotFindDevice"             = "Device not found. Reconnect device ?";
+"UnknowType"                = "Unknown Bluetooth type";
+"blueDisconnect"            = "Bluetooth disconnected";
+"SureDeleteFood"            = "Confirm delete %@ ?";
+"Search again"              = "Search again";
+"Hour"                      = "H";
+"Minute"                    = "M";
+"Second"                    = "S";

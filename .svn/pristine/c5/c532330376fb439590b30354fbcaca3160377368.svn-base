@@ -1,0 +1,531 @@
+//
+//  SystemManager.m
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/13.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import "SystemManager.h"
+#import "TempRecordModel.h"
+#import <MediaPlayer/MediaPlayer.h>
+#import <AVFoundation/AVFoundation.h>
+#import "AppDelegate.h"
+
+@interface SystemManager ()
+@property (nonatomic, strong) AVAudioPlayer *audioPlayer;     //音乐播放
+
+@property (nonatomic, strong) NSMutableArray *logDataArray;
+
+@property (nonatomic, strong) NSTimer *tempTimer1;
+@property (nonatomic, strong) NSTimer *tempTimer2;
+@property (nonatomic, strong) NSTimer *tempTimer3;
+@property (nonatomic, strong) NSTimer *tempTimer4;
+
+@property (nonatomic, assign) BOOL isBackgroundPlay;
+
+@end
+
+
+@implementation SystemManager
+
++ (SystemManager *)shareManager
+{
+    static SystemManager *share = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^
+                  {
+                      share = [[self alloc] init];
+                  });
+    return share;
+}
+
+-(id)init
+{
+    if (self = [super init]) {
+        self.tempArray1 = [NSMutableArray array];
+        self.tempArray2 = [NSMutableArray array];
+        self.tempArray3 = [NSMutableArray array];
+        self.tempArray4 = [NSMutableArray array];
+        
+        self.needShowTempAlert1 = YES;
+        self.needShowTempAlert2 = YES;
+        self.needShowTempAlert3 = YES;
+        self.needShowTempAlert4 = YES;
+        
+        self.isBackgroundPlay = NO; //后台自动播放音乐
+        
+    }
+    return self;
+}
+
+//温度单位
+-(void)setTempUnit:(NSString *)tempUnit
+{
+    [[NSUserDefaults standardUserDefaults] setObject:tempUnit forKey:@"APP_Temp_Unit"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+-(NSString *)tempUnit
+{
+    NSString *v = [[NSUserDefaults standardUserDefaults] objectForKey:@"APP_Temp_Unit"];
+    return v == nil ? @"℃" : v;
+}
+
+//铃声列表
+-(NSArray *)alarmList
+{
+    return @[NSLocalizedString(@"Alarm_Ringtone_1", nil),
+             NSLocalizedString(@"Alarm_Ringtone_2", nil),
+             NSLocalizedString(@"Alarm_Ringtone_3", nil),
+             NSLocalizedString(@"Alarm_Ringtone_4", nil)];
+}
+
+-(NSArray *)alarmMusicList
+{
+    return @[@"ring_6.mp3", @"ring_7.mp3", @"ring_8.mp3", @"ring_13.mp3"];
+}
+
+//时间铃声
+-(void)setTimerAlarm:(NSInteger)timerAlarm
+{
+    [[NSUserDefaults standardUserDefaults] setInteger:timerAlarm forKey:@"APP_Timer_Alarm"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+-(NSInteger)timerAlarm
+{
+    NSInteger v = [[NSUserDefaults standardUserDefaults] integerForKey:@"APP_Timer_Alarm"];
+    return v;
+}
+
+//温度铃声
+-(void)setTempAlarm:(NSInteger)tempAlarm
+{
+    [[NSUserDefaults standardUserDefaults] setInteger:tempAlarm forKey:@"APP_Temp_Alarm"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+-(NSInteger)tempAlarm
+{
+    NSInteger v = [[NSUserDefaults standardUserDefaults] integerForKey:@"APP_Temp_Alarm"];
+    return v;
+}
+
+//摄氏度转换成华氏度
+-(CGFloat)calculateFahrenheitTemperature:(CGFloat)c
+{
+    return 9*c/5+32;
+}
+
+//华氏度转换成摄氏度
+-(CGFloat)calculateCentigradeTemperature:(CGFloat)f
+{
+    return (f-32)*5/9;
+}
+
+-(CGFloat)tempConvertFahrenheit:(CGFloat)c
+{
+    NSArray *units = @[@"°F", @"℃"];
+    NSInteger tempIndex = [units indexOfObject:self.tempUnit];
+    
+    //摄氏度
+    if (tempIndex == 1) {
+        return c;
+    }
+    
+    //华氏度
+    return [self calculateFahrenheitTemperature:c];
+}
+
+-(void)setDeviceTempOne:(CGFloat)deviceTempOne
+{
+    _deviceTempOne = deviceTempOne;
+    
+    TempRecordModel *record = [[TempRecordModel alloc] init];
+    record.temp = deviceTempOne;
+    record.date= [NSDate date];
+    
+    [self.tempArray1 addObject:record];
+}
+
+-(void)setDeviceTempTwo:(CGFloat)deviceTempTwo
+{
+    _deviceTempTwo = deviceTempTwo;
+    
+    TempRecordModel *record = [[TempRecordModel alloc] init];
+    record.temp = deviceTempTwo;
+    record.date= [NSDate date];
+    
+    [self.tempArray2 addObject:record];
+}
+
+-(void)setDeviceTempThree:(CGFloat)deviceTempThree
+{
+    _deviceTempThree = deviceTempThree;
+    
+    TempRecordModel *record = [[TempRecordModel alloc] init];
+    record.temp = deviceTempThree;
+    record.date= [NSDate date];
+    
+    [self.tempArray3 addObject:record];
+}
+
+-(void)setDeviceTempFour:(CGFloat)deviceTempFour
+{
+    _deviceTempFour = deviceTempFour;
+    
+    TempRecordModel *record = [[TempRecordModel alloc] init];
+    record.temp = deviceTempFour;
+    record.date= [NSDate date];
+    
+    [self.tempArray4 addObject:record];
+}
+
+
+//根据蓝牙名称返回类型
+-(DeviceType)getDeviceTypeWithBluename:(NSString *)name
+{
+    int type = DeviceTypeUnknow;
+    if ([name isEqualToString:@"Mini Grill"]) {
+        type = DeviceTypeOne;
+    }else if ([name isEqualToString:@"4 Prob Grill"]){
+        type = DeviceTypeFour;
+    }
+    
+    return type;
+}
+
+-(NSArray *)getTempArrayWithNumber:(NSInteger)number
+{
+    if (number == 1) {
+        return self.tempArray1;
+    }else if (number == 2){
+        return self.tempArray2;
+    }else if (number == 3){
+        return self.tempArray3;
+    }else if (number == 4){
+        return self.tempArray4;
+    }
+    return nil;
+}
+
+-(void)clearTempArray
+{
+    self.tempArray1 = [NSMutableArray array];
+    self.tempArray2 = [NSMutableArray array];
+    self.tempArray3 = [NSMutableArray array];
+    self.tempArray4 = [NSMutableArray array];
+}
+
+
+
+#pragma mark AVAudioPlayer
+-(void)createPlayerWithMusicName:(NSString *)name
+{
+    if (self.audioPlayer ) {
+        [self.audioPlayer stop];
+        self.audioPlayer = nil;
+    }
+    
+    NSArray *array = [name componentsSeparatedByString:@"."];
+    
+    NSString *string = [[NSBundle mainBundle] pathForResource:[array objectAtIndex:0] ofType:[array objectAtIndex:1]];
+    NSURL *url = [NSURL fileURLWithPath:string];
+    
+    self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:nil];
+    //重复次数（小于0无限循环播放）
+    self.audioPlayer.numberOfLoops = -1;
+    //速率
+    self.audioPlayer.enableRate = YES;
+    //分贝
+    self.audioPlayer.meteringEnabled = YES;
+    self.audioPlayer.rate = 1;
+    //音量
+    self.audioPlayer.volume = 1;
+    
+    [self.audioPlayer prepareToPlay];
+}
+
+-(void)playTimeAlarm
+{
+    NSString *musicName = [[self alarmMusicList] objectAtIndex:[self timerAlarm]];
+    
+    [self createPlayerWithMusicName:musicName];
+    
+    [self.audioPlayer play];
+}
+
+-(void)playTempAlarm
+{
+    NSString *musicName = [[self alarmMusicList] objectAtIndex:[self tempAlarm]];
+    
+    [self createPlayerWithMusicName:musicName];
+    
+    [self.audioPlayer play];
+}
+
+-(void)playAlarmWithIndex:(NSInteger)index
+{
+    NSString *musicName = [[self alarmMusicList] objectAtIndex:index];
+    
+    [self createPlayerWithMusicName:musicName];
+    
+    [self.audioPlayer play];
+}
+
+-(void)pauseMusic
+{
+    if (self.audioPlayer == nil) {
+        return;
+    }
+    if ([self.audioPlayer isPlaying]) {
+        [self.audioPlayer pause];
+    }
+}
+
+-(void)playBackgroundMusic
+{
+    //已经在播放音乐，后台不添加播放
+    if (self.audioPlayer == nil && [self.audioPlayer isPlaying]) {
+        return;
+    }
+    self.isBackgroundPlay = YES;
+    
+    [self createPlayerWithMusicName:@"无声.mp3"];
+    
+    [self.audioPlayer play];
+}
+
+-(void)pauseBackgroundMusic
+{
+    if (self.audioPlayer == nil) {
+        return;
+    }
+    if (self.isBackgroundPlay) {        
+        self.isBackgroundPlay = NO;
+        if ([self.audioPlayer isPlaying]) {
+            [self.audioPlayer pause];
+        }
+    }
+}
+
+
+#pragma mark 本地推送
+
+-(void)sendLocalNotificationTemp
+{
+    [self sendLocalNotificationWithTitle:[self languageKey:@"TempAlarm"]];
+}
+
+-(void)sendLocalNotificationTime
+{
+    [self sendLocalNotificationWithTitle:[self languageKey:@"CountTimeEnd"]];
+}
+
+-(void)sendLocalNotificationWithTitle:(NSString *)title
+{
+    if (title == nil) {
+        return;
+    }
+    
+    if([UIApplication sharedApplication].applicationState != UIApplicationStateBackground)
+    {
+        return;
+    }
+    
+    UILocalNotification *notification = [[UILocalNotification alloc] init];
+    
+    // 设置推送时间
+    notification.fireDate = [[NSDate alloc] init];
+    // 设置时区
+    notification.timeZone = [NSTimeZone defaultTimeZone];
+    // 推送声音
+    notification.soundName = UILocalNotificationDefaultSoundName;
+    // 推送内容
+    notification.alertBody = title;
+    //显示在icon上的红色圈中的数子
+    notification.applicationIconBadgeNumber = 1;
+    
+    [self registerNotificationSetting];
+    
+    //添加推送到UIApplication
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+}
+
+-(void)registerNotificationSetting
+{
+    // ios8后，需要添加这个注册，才能得到授权
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationType type =  UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:type
+                                                                                 categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    }else
+    {
+        [[UIApplication sharedApplication]registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert|
+                                                                              UIRemoteNotificationTypeBadge|
+                                                                              UIRemoteNotificationTypeSound)];
+    }
+}
+
+#pragma mark - log
+
+-(void)addLogWithA:(int)a b:(int)b c:(int)c d:(int)d e:(int)e
+{
+    if (self.logDataArray == nil) {
+        self.logDataArray = [NSMutableArray array];
+    }
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString *time = [dateFormatter stringFromDate:[NSDate date]];
+    
+    NSString *string = [NSString stringWithFormat:@"%@:%0.2d%0.2d%0.2d%0.2d%0.2d",time,a,b,c,d,e];
+    
+    [self.logDataArray addObject:string];
+}
+
+-(void)saveLogData
+{
+    if ([self.logDataArray count] == 0) {
+        return;
+    }
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES) ; //得到documents的路径，为当前应用程序独享
+    NSString *documentD = [paths objectAtIndex:0];
+    NSString *configFile = [documentD stringByAppendingPathComponent:@"log.txt"];
+    
+    [self.logDataArray writeToFile:configFile atomically:YES];
+    
+    self.logDataArray = nil;
+}
+
+
+#pragma mark - 
+-(BOOL)getNeedTempAlertIndex:(DeviceTempIndex)index
+{
+    BOOL v;
+    if (index == DeviceTempIndexOne) {
+        v = self.needShowTempAlert1;
+    }else if (index == DeviceTempIndexTwo){
+        v = self.needShowTempAlert2;
+    }else if (index == DeviceTempIndexThree){
+        v = self.needShowTempAlert3;
+    }else if (index == DeviceTempIndexFour){
+        v = self.needShowTempAlert4;
+    }
+    return v;
+}
+-(void)showTempAlertWithIndex:(DeviceTempIndex)index
+{
+    [self setTempAlertShow:YES index:index];
+}
+
+-(void)hideTempAlertWithIndex:(DeviceTempIndex)index
+{
+    [self setTempAlertShow:NO index:index];
+}
+
+
+-(void)setTempAlertShow:(BOOL)show index:(DeviceTempIndex)index
+{
+    switch (index) {
+        case DeviceTempIndexOne:
+            self.needShowTempAlert1 = show;
+            break;
+        case DeviceTempIndexTwo:
+            self.needShowTempAlert2 = show;NSLog(@"set2:%d", show);
+            break;
+        case DeviceTempIndexThree:
+            self.needShowTempAlert3 = show;NSLog(@"set3:%d", show);
+            break;
+        case DeviceTempIndexFour:
+            self.needShowTempAlert4 = show;
+            break;
+    }
+}
+
+-(void)showTempAlertTimerWithIndex:(DeviceTempIndex)index
+{
+    if (index == DeviceTempIndexOne) {
+        
+        if (self.tempTimer1) {
+            [self.tempTimer1 invalidate];
+            self.tempTimer1 = nil;
+        }
+        self.tempTimer1 = [NSTimer scheduledTimerWithTimeInterval:30
+                                                          target:self
+                                                        selector:@selector(setTempAlertIsShow:)
+                                                        userInfo:@{@"index":@(index)}
+                                                         repeats:NO];
+    }else if (index == DeviceTempIndexTwo){
+        
+        if (self.tempTimer2) {
+            [self.tempTimer2 invalidate];
+            self.tempTimer2 = nil;
+        }
+        self.tempTimer2 = [NSTimer scheduledTimerWithTimeInterval:30
+                                                          target:self
+                                                        selector:@selector(setTempAlertIsShow:)
+                                                        userInfo:@{@"index":@(index)}
+                                                         repeats:NO];
+    }else if (index == DeviceTempIndexThree){
+        
+        if (self.tempTimer3) {
+            [self.tempTimer3 invalidate];
+            self.tempTimer3 = nil;
+        }
+        self.tempTimer3 = [NSTimer scheduledTimerWithTimeInterval:30
+                                                          target:self
+                                                        selector:@selector(setTempAlertIsShow:)
+                                                        userInfo:@{@"index":@(index)}
+                                                         repeats:NO];
+    }else if (index == DeviceTempIndexFour){
+        
+        if (self.tempTimer4) {
+            [self.tempTimer4 invalidate];
+            self.tempTimer4 = nil;
+        }
+        self.tempTimer4 = [NSTimer scheduledTimerWithTimeInterval:30
+                                                          target:self
+                                                        selector:@selector(setTempAlertIsShow:)
+                                                        userInfo:@{@"index":@(index)}
+                                                         repeats:NO];
+    }
+}
+
+-(void)setTempAlertIsShow:(NSTimer *)timer
+{
+    NSInteger index = [[[timer userInfo] objectForKey:@"index"] integerValue];
+    [self showTempAlertWithIndex:index];
+    
+    if (index == DeviceTempIndexOne) {
+        
+        if (self.tempTimer1) {
+            [self.tempTimer1 invalidate];
+            self.tempTimer1 = nil;
+        }
+    }else if (index == DeviceTempIndexTwo){
+        
+        if (self.tempTimer2) {
+            [self.tempTimer2 invalidate];
+            self.tempTimer2 = nil;
+        }
+    }else if (index == DeviceTempIndexThree){
+        
+        if (self.tempTimer3) {
+            [self.tempTimer3 invalidate];
+            self.tempTimer3 = nil;
+        }
+    }else if (index == DeviceTempIndexFour){
+        
+        if (self.tempTimer4) {
+            [self.tempTimer4 invalidate];
+            self.tempTimer4 = nil;
+        }
+    }
+    
+}
+
+@end

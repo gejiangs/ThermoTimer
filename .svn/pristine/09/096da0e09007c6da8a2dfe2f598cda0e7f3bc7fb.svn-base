@@ -1,0 +1,256 @@
+//
+//  BluetoothManager+Category.m
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/11.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import "BluetoothManager+Category.h"
+#import "ByteUtil.h"
+#import "AppDelegate.h"
+
+
+@implementation BluetoothManager (Category)
+
+
+-(void)didConnectPeripheral
+{
+    NSLog(@"设备连接成功");
+}
+
+- (void)blocking
+{
+    Byte mode[6];
+    mode[0] = 0x60;
+    mode[1] = 0xbe;
+    mode[2] = 0x01;
+    mode[3] = 0x00;
+    mode[4] = 0x00;
+    mode[5] = 0x00;
+    
+    NSData *modeData = [NSData dataWithBytes:mode length:6];
+    
+    [self sendOrderData:modeData];
+}
+
+- (void)deblocking
+{
+    Byte mode[6];
+    mode[0] = 0x60;
+    mode[1] = 0xbe;
+    mode[2] = 0x00;
+    mode[3] = 0x00;
+    mode[4] = 0x00;
+    mode[5] = 0x00;
+    
+    NSData *modeData = [NSData dataWithBytes:mode length:6];
+    
+    [self sendOrderData:modeData];
+}
+
+
+
+
+
+-(void)facebackOrder
+{
+    Byte mode[6];
+    mode[0] = 0xC0;
+    mode[1] = 0x86;
+    mode[2] = 0x00;
+    mode[3] = 0x00;
+    mode[4] = 0x00;
+    mode[5] = 0x00;
+    
+    NSData *modeData = [NSData dataWithBytes:mode length:6];
+    
+    [self sendOrderData:modeData];
+}
+
+
+-(void)sendMaxTemp:(CGFloat)temp number:(NSInteger)number
+{
+    Byte mode[6];
+    mode[0] = 0xD7;
+    mode[1] = number;
+    mode[2] = 0x00;
+    if (temp - 255 > 0) {
+        mode[3] = temp - 255;
+        mode[4] = 0xff;
+    }else{
+        mode[3] = 0x00;
+        mode[4] = temp;
+    }
+    mode[5] = 0x00;
+    
+    NSData *modeData = [NSData dataWithBytes:mode length:6];
+    
+    [self sendOrderData:modeData];
+}
+
+
+//发送数据
+-(void)sendOrderData:(NSData *)data
+{
+    for(CBService *service in self.peripheral.services){
+        for(CBCharacteristic *characteristic in service.characteristics){
+            if (characteristic.properties == CBCharacteristicPropertyWrite) {
+                [self.peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
+                break;
+            }
+        }
+    }
+}
+
+-(void)fourDeviceTempUpdate:(void (^)(NSInteger, CGFloat))block
+{
+    self.fourDeviceTempBlock = block;
+}
+
+-(void)singleDeviceTempUpdate:(void(^)(CGFloat temp))block
+{
+    self.singleDeviceTempBlock = block;
+}
+
+-(void)singleDeviceNormalTempUpdate:(void(^)(CGFloat temp))block
+{
+    self.singleDeviceNormalTempBlock = block;
+}
+
+-(void)receiveWithPeripheral:(CBPeripheral *)peripheral characteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+{
+    if (error) {
+        NSLog(@"receive error:%@", error);
+        return;
+    }
+    
+//    NSLog(@"收到的数据：%@",characteristic.value);
+    
+    Byte data[255];
+    [characteristic.value getBytes:data range:NSMakeRange(0, characteristic.value.length)];
+    
+    //连接成功后，设备返回指令
+    if (data[0] == 0xA0) {
+        //正常连接，反馈指令
+        [self facebackOrder];
+    }
+    //收到设备返回的温度信息
+    else if (data[0] == 0x08){
+        
+        //通道类型(0-4),是否正负数,高位温度，低位温度，小数
+        Byte byteNumber[1], byteMask[1], byteHeight[1], byteLow[1], byteDecimal[1];
+        
+        byteNumber[0]   = data[1];
+        byteMask[0]     = data[2];
+        byteHeight[0]   = data[3];
+        byteLow[0]      = data[4];
+        byteDecimal[0]  = data[5];
+        
+        
+        int number  = [ByteUtil lowByteArray2int:byteNumber Length:1];
+        BOOL isPlus = [ByteUtil lowByteArray2int:byteMask Length:1] == 0;
+        int height  = [ByteUtil lowByteArray2int:byteHeight Length:1];
+        int low     = [ByteUtil lowByteArray2int:byteLow Length:1];
+        int decimal = [ByteUtil lowByteArray2int:byteDecimal Length:1];
+        
+        //080100ff ffff(后三位为ff的情况为断开)
+        if (height == 255 && low == 255 && decimal == 255) {
+            height = 0;
+            low = 0;
+            decimal = 0;
+        }
+        height      = height * 255;//0x01 0x01表示256，所以高位需要*255
+        
+        if ([SystemManager shareManager].currentDeviceType == DeviceTypeFour) {
+            
+            if (number == 0) {
+                return;
+            }
+            
+            CGFloat temp = [[NSString stringWithFormat:@"%d.%d", height+low, decimal] floatValue];
+            temp = isPlus ? temp : -temp;   //正负
+            
+            if (self.fourDeviceTempBlock) {
+                self.fourDeviceTempBlock(number, temp);
+            }
+            
+            switch (number) {
+                case 1:
+                    [SystemManager shareManager].deviceTempOne = temp;
+                    break;
+                case 2:
+                    [SystemManager shareManager].deviceTempTwo = temp;
+                    break;
+                case 3:
+                    [SystemManager shareManager].deviceTempThree = temp;
+                    break;
+                case 4:
+                    [SystemManager shareManager].deviceTempFour = temp;
+                    break;
+                default:
+                    break;
+            }
+        }else if ([SystemManager shareManager].currentDeviceType == DeviceTypeOne){
+            
+            CGFloat temp = [[NSString stringWithFormat:@"%d.%d", height+low, decimal] floatValue];
+            temp = isPlus ? temp : -temp;   //正负
+            
+            //常温
+            if (number == 0) {
+                if (self.singleDeviceNormalTempBlock) {
+                    self.singleDeviceNormalTempBlock(temp);
+                }
+                return;
+            }
+            
+            [SystemManager shareManager].deviceTempOne = temp;
+            
+            //探头温度
+            if (self.singleDeviceTempBlock) {
+                self.singleDeviceTempBlock(temp);
+            }
+        }
+    }
+    //单通道
+    else if(data[0] == 0x20){
+        
+        BOOL isNormal = YES;
+        //低电量
+        if (data[1] == 0xba && data[2] == 0x01) {
+            isNormal = NO;
+        }
+        //正常电量
+        else if (data[1] == 0xba && data[2] == 0x00) {
+            isNormal = YES;
+        }
+        if (self.updateDeviceBatteryBlock) {
+            self.updateDeviceBatteryBlock(isNormal);
+        }
+    }
+}
+
+
+//蓝牙断开处理
+-(void)blueDisconnectHandler
+{
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    UINavigationController *navi = (UINavigationController *)appDelegate.window.rootViewController;
+    if ([[navi viewControllers] count] <= 2) {
+        return;
+    }
+    UIViewController *vc = [navi.viewControllers objectAtIndex:1];
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Tip", nil)
+                                                    message:NSLocalizedString(@"blueDisconnect", nil)
+                                                   delegate:nil
+                                          cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                          otherButtonTitles:nil, nil];
+    [alert showAlertViewWithCompleteBlock:^(NSInteger buttonIndex) {
+        [navi popToViewController:vc animated:YES];
+    }];
+    
+}
+
+
+@end

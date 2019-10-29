@@ -1,0 +1,25 @@
+//
+//  PrefixHeader.pch
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/10.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+    #import "Macro.h"
+
+    //define this constant if you want to use Masonry without the 'mas_' prefix
+    #define MAS_SHORTHAND
+
+    //define this constant if you want to enable auto-boxing for default syntax
+    #define MAS_SHORTHAND_GLOBALS
+
+    #import "Masonry.h"
+
+    ///< json->model
+    #import "MJExtension.h"
+
+#endif

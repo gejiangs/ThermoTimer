@@ -1,0 +1,153 @@
+/* 
+  Localizable.strings
+  ThermoTimer
+
+  Created by gejiangs on 15/8/10.
+  Copyright (c) 2015年 gejiangs. All rights reserved.
+*/
+
+/*******Home********/
+"image_four_name"           = "imageFour_cn";
+"image_one_name"            = "imageOne_cn";
+"home_bg_top"               = "home_bg_top";
+"Welcome"                   = "欢迎";
+"NoEnableDevice"            = "无可用设备";
+"HomeTitle"                 = "温度计&计时器";
+"FoodTitle"                 = "食物选择";
+"FoodAddTitle"              = "温度设定";
+"FoodTipTitle"              = "标题";
+"FoodPlaceTitle"            = "新建预设名";
+"ConnectTitle"              = "正在连接我的产品";
+"ConnectNoFindTitle"        = "我们无法在附近找到 T2 产品";
+"ConnectOpenBlue"           = "提示：开启蓝牙";
+"ConnectOpenT2"             = "| 打开 T2 产品";
+"BlueTitle"                 = "选择";
+"Search"                    = "搜索";
+"2ProbGrill"                = "2头烤肉针";
+"3ProbGrill"                = "3头烤肉针";
+"4ProbGrill"                = "4头烤肉针";
+"MiniGrill"                 = "单头烤肉针";
+"NormalTemp"                = "环境温度";
+"textLabel"                 = "产品仅为示意图";
+"BlueNotOpenTip"            = "蓝牙未开启，请打开蓝牙";
+"OpenBlue"                  = "开启蓝牙";
+
+"TempIndoor"                = "室温";
+"TempBeef"                  = "牛排";
+"TempLamb"                  = "羊肉";
+"TempChicken"               = "鸡肉";
+"TempTurkey"                = "火鸡";
+"TempPork"                  = "猪肉";
+"TempFish"                  = "鱼肉";
+"TempHambuge"               = "汉堡";
+
+"TempSetting"               = "自定义温度";
+"TempWelldone"              = "标准温度";
+"TempRare"                  = "三分熟";
+"TempMedRare"               = "五分熟";
+"TempMeddium"               = "七分熟";
+"TempMedAll"                = "全    熟";
+"TempComfortable"           = "舒适温度";
+"CurveSet"                  = "曲线查看";
+"TimeSet"                   = "时间设定";
+"CurrentTemp"               = "当前温度";
+"GoalTemp"                  = "目标温度";
+"CountTime"                 = "倒计时";
+
+"DeviceNeedle"              = "探针";
+"CountTimeTitle"            = "计时器";
+"TempSettingTitle"          = "温度设定";
+"TimeNoSetTitle"            = "无预设";
+"DeviceCountTimeEnd"        = "    探针%@-计时器已完成！";
+"CountTimeEnd"              = "    计时器已完成！";
+"TempAlarm"                 = "    完成！";
+"TempIndexAlarm"            = "    探针%@温度警报！";
+"Time"                      = "时间";
+"Temperature"               = "温度";
+"TipInputName"              = "请填写名称";
+"TipInputTemp"              = "请填写合适温度";
+
+/*********Button*********/
+"StartCooking"              = "确定";
+"Delete"                    = "删除";
+"Start"                     = "开始";
+"Reset"                     = "重置";
+"Save"                      = "保存";
+"Fine"                      = "好";
+
+/*******Setting********/
+
+"SettingTitle"              = "设置";
+"SettingTempUnit"           = "温度单位";
+"SettingTimerAlarm"         = "定时报警";
+"SettingTempAlarm"          = "温度报警";
+"SaveSuccess"               = "保存成功";
+"Alarm_Ringtone_1"          = "铃声1";
+"Alarm_Ringtone_2"          = "铃声2";
+"Alarm_Ringtone_3"          = "铃声3";
+"Alarm_Ringtone_4"          = "铃声4";
+
+/*******About********/
+"AboutTitle"                = "关于";
+"Version"                   = "版本";
+"Email"                     = "邮箱:";
+"Website"                   = "网址:";
+"ProductDesc1"              = "        本产品连接T2产品单头探针。当温度到达或时间倒数完毕即有响铃，可单独做为计时器使用;内置多种烹调类型可供选择,自行增加多种理想的温度与时间~!";
+"ProductDesc4"              = "        本产品连接T2产品四头探针。当温度到达或时间倒数完毕即有响铃，可单独做为计时器使用;内置多种烹调类型可供选择,自行增加多种理想的温度与时间~!";
+"ProductIcon1"              = "蓝牙";
+"ProductIcon2"              = "电池";
+"ProductIcon3"              = "温度设定";
+"ProductIcon4"              = "报警";
+"ProductIcon5"              = "温度曲线";
+"ProductIcon6"              = "计时器";
+
+
+/*******Operation********/
+"OperationTitle"            = "操作说明";
+"OperationTitle1"           = "下载应用程序";
+"OperationTitle2"           = "启动应用程序并通过蓝牙连接";
+"OperationTitle3"           = "连接探针";
+"OperationTitle4"           = "选择食物选项或自定温度";
+"OperationTitle5"           = "注意报警铃声";
+"OperationTitle6"           = "注意事项";
+"OperationDesc1"            = "从苹果商店下载        ,单击图标后安装;";
+"OperationDesc2"            = "";
+"OperationDesc3"            = "";
+"OperationDesc4"            = "";
+"OperationDesc5"            = "当被测物达到设定温度(或设定时间)时，报警铃声响起，并提示用户完成;";
+"OperationDesc6"            = "当不使用时，用清水冲洗探针，用软布擦试干净，并收线放置在儿童不易取得处，防止意外发生.";
+
+
+
+/*******Timer********/
+"TimerTitle"                = "计时器";
+"TimerSetError"             = "定时不能设置为0秒";
+
+
+
+
+/*******More*********/
+"MoreTitle"                 = "更多";
+"MoreClose"                 = "关闭";
+"MoreTimer"                 = "计时器";
+"MoreSetting"               = "设置";
+"MoreOperation"             = "操作说明";
+"MoreSearch"                = "重新搜索";
+"MoreAbout"                 = "关于";
+
+
+
+/********Tip*********/
+"Connecting"                = "正在连接...";
+"ConnectFailure"            = "连接失败";
+"Searching"                 = "正在搜索...";
+"Tip"                       = "提示";
+"Cancel"                    = "取消";
+"OK"                        = "确定";
+"NotFindDevice"             = "未搜索到设备，请\"重新搜索\"";
+"UnknowType"                = "未知蓝牙类型";
+"blueDisconnect"            = "蓝牙已断开";
+"SureDeleteFood"            = "确认删除 %@ ?";
+"Hour"                      = "时";
+"Minute"                    = "分";
+"Second"                    = "秒";

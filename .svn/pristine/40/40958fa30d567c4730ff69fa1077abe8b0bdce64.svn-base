@@ -1,0 +1,455 @@
+//
+//  SingleDeviceViewController.m
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/10.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import "SingleDeviceViewController.h"
+#import "TempCurveViewController.h"
+#import "SingleDeviceCell.h"
+#import "FoodModel.h"
+#import "FoodChoiceViewController.h"
+#import "TimerViewController.h"
+#import "BluetoothManager.h"
+#import "BluetoothManager+Category.h"
+#import "TempRecordModel.h"
+#import "DeviceStatuView.h"
+#import "NormalTempView.h"
+#import "TKAlertView.h"
+#import "DataManager.h"
+
+@interface SingleDeviceViewController ()
+
+@property (weak, nonatomic) IBOutlet UIButton *backButton;
+@property (nonatomic, strong)   FoodModel *foodModel;
+@property (nonatomic, strong)   NSTimer *timer;
+
+@property (nonatomic, strong)   DeviceStatuView *deviceInfoView;
+@property (nonatomic, strong)   NormalTempView *tempView;
+
+@property (nonatomic, strong)   NSTimer *backgroundTimer;
+@property (nonatomic, assign)   BOOL isShowHighlighted; //显示高亮背景
+@property (nonatomic, strong)   TKAlertView *tempAlert;
+@property (nonatomic, strong)   TKAlertView *timeAlert;
+@property (nonatomic, strong)   NSTimer *clearTime;
+
+@end
+
+@implementation SingleDeviceViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self.view bringSubviewToFront:self.backButton];
+    self.topImageView.hidden = NO;
+    
+    [self.tableView updateConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(130);
+    }];
+    
+    //获取缓存
+    self.foodModel = [[DataManager shareManager] getSingleFoodModel];
+    
+    [self showDeviceInfoView];
+    [self showTempView];
+    
+    //默认设置需要显示温度警报
+    [[SystemManager shareManager] showTempAlertWithIndex:DeviceTempIndexOne];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(blueDisconnect) name:NotificationBlueDisconnect object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshTableViewCell) name:NotificationBlueConnected object:nil];
+
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    
+    [[BluetoothManager shareManager] singleDeviceTempUpdate:^(CGFloat temp) {
+        self.foodModel.deviceTempValue = temp;
+        TempRecordModel *record = [[TempRecordModel alloc] init];
+        record.temp = temp;
+        record.date= [NSDate date];
+        
+        [self.foodModel.tempArray1 addObject:record];
+    }];
+    
+    [self.tableView reloadData];
+    
+    [self.tempView updateNormalTemp];
+    [self.deviceInfoView updateDeviceSingal];
+    
+    if (self.timer != nil) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+    
+    [self refreshTableViewCell];
+    
+}
+
+-(void)showDeviceInfoView
+{
+    if (self.deviceInfoView != nil) {
+        return;
+    }
+    self.deviceInfoView = [[DeviceStatuView alloc] init];
+    [self.view addSubview:_deviceInfoView];
+    
+    [_deviceInfoView makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(Size(30, 45));
+        make.top.offset(70);
+        make.right.offset(-10);
+    }];
+}
+
+
+-(void)showTempView
+{
+    if (self.tempView != nil) {
+        return;
+    }
+    
+    self.tempView = [[NormalTempView alloc] init];
+    [self.view addSubview:_tempView];
+    
+    [_tempView makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(Size(50, 45));
+        make.top.offset(70);
+        make.left.offset(10);
+    }];
+}
+
+
+- (IBAction)backClicked:(UIButton *)sender
+{
+    //返回，手动断开蓝牙，清除保存信息（设置为nil就可清除）
+    [[DataManager shareManager] saveSingleFoodmodel:nil];
+    
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+
+
+-(void)replaceFoodInfo:(FoodModel *)model
+{
+    self.foodModel.type = model.type;
+    self.foodModel.selectedIndex = model.selectedIndex;
+    self.foodModel.customValue = model.customValue;
+    self.foodModel.name = model.name;
+    self.foodModel.tag = model.tag;
+    
+    [self.tableView reloadData];
+    
+    //保存设置信息
+    [[DataManager shareManager] saveSingleFoodmodel:self.foodModel];
+    
+    CGFloat temp = self.foodModel.gCustomValue;
+    if (model.selectedIndex >= 0) {
+        temp = self.foodModel.selectedValue;
+    }
+    
+    //设置了温度需要设置显示温度警报
+    [[SystemManager shareManager] showTempAlertWithIndex:DeviceTempIndexOne];
+    
+    //因为硬件的警报温度类型为摄氏度（当为华摄氏度的时候，需要转成摄氏度再发送到硬件上）
+    NSArray *units = @[@"°F", @"℃"];
+    NSInteger tempIndex = [units indexOfObject:[SystemManager shareManager].tempUnit];
+    //华摄氏度
+    if (tempIndex == 0) {
+        temp = [[SystemManager shareManager] calculateCentigradeTemperature:temp];
+    }
+    //四舍五入
+    temp = round(temp);
+    
+    //设置报警温度
+    [[BluetoothManager shareManager] sendMaxTemp:temp number:1];
+}
+
+-(void)setCountdownTime:(NSInteger)time
+{
+    self.foodModel.countDownTime = time;
+    
+    [[DataManager shareManager] saveSingleFoodmodel:self.foodModel];
+}
+
+//清除自定义温度
+-(void)clearCustomValueWithTag:(NSInteger)tag
+{
+    if (tag != self.foodModel.tag) {
+        return;
+    }
+    
+    self.foodModel.selectedIndex = -1;
+    self.foodModel.customValue = -1;
+    self.foodModel.tag = 0;
+    self.foodModel.type = -1;
+    self.foodModel.name = @"";
+    
+    //同时发送锁铃命令
+    [[BluetoothManager shareManager] blockingWithIndex:DeviceTempIndexOne];
+}
+
+//刷新UITableViewCell内容
+-(void)refreshTableViewCell
+{
+    //更新
+    for (int i=1; i<3; i++) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        SingleDeviceCell *cell = (SingleDeviceCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+        [cell setCellInfo:self.foodModel rowIndex:i];
+    }
+    
+    
+    //查检温度警报
+    CGFloat v = self.foodModel.selectedValue;
+    if (self.foodModel.selectedIndex == -1) {
+        v = self.foodModel.gCustomValue;
+    }
+    
+    if (v >= 0 && self.foodModel.deviceTempValue >= v) {
+        [self showTempAlertView];
+    }
+    
+    NSInteger currentTime = [[[NSDate alloc] init] timeIntervalSince1970];
+
+    if (self.foodModel.countDownTime - currentTime == 0) {
+        
+        [self timeCountDownEnd];
+    }
+    
+    if (self.timer != nil) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.f
+                                                  target:self
+                                                selector:@selector(refreshTableViewCell)
+                                                userInfo:nil
+                                                 repeats:NO];
+}
+
+-(void)showTempAlertView
+{
+    if (![SystemManager shareManager].needShowTempAlert1) {
+        return;
+    }
+    
+//    //判断是否在停留在当前VC
+//    UIViewController *lastVC = [self.navigationController.viewControllers lastObject];
+//    if (![lastVC isKindOfClass:[SingleDeviceViewController class]]) {
+//        return;
+//    }
+    
+    //设置温度警报不需要显示
+    [[SystemManager shareManager] hideTempAlertWithIndex:DeviceTempIndexOne];
+    
+    [[BluetoothManager shareManager] deblockingWithIndex:DeviceTempIndexOne];
+    
+    self.tempAlert = [[TKAlertView alloc] initWithTitle:[self languageKey:@"TempAlarm"]
+                                            buttonTitle:[self languageKey:@"Fine"]
+                                             sureAction:^{
+                                                 [[BluetoothManager shareManager] blockingWithIndex:DeviceTempIndexOne];
+                                                 [[SystemManager shareManager] pauseMusic];
+                                                 
+                                                 //背景停止闪
+                                                 [self setNumberTwinkleWithState:NO];
+                                                 
+                                                 //设置温度警报30秒后再需要显示
+                                                 [[SystemManager shareManager] showTempAlertTimerWithIndex:DeviceTempIndexOne];
+                                             }];
+    [self.tempAlert show];
+    
+    [[SystemManager shareManager] playTempAlarm];
+    [[SystemManager shareManager] sendLocalNotificationTemp];
+    
+    //背景闪
+    [self setNumberTwinkleWithState:YES];
+}
+
+
+#pragma mark UITableView Delegate
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 3;
+}
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *ident = @"cell";
+    SingleDeviceCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
+    if (cell == nil) {
+        cell = [[SingleDeviceCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ident];
+    }
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    
+    [cell setCellInfo:self.foodModel rowIndex:indexPath.row];
+    
+    return cell;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 100.f;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1f;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (indexPath.row == 0) {
+        FoodChoiceViewController *foodVC = [[FoodChoiceViewController alloc] init];
+        [self.navigationController pushViewController:foodVC animated:YES];
+    }else if (indexPath.row == 1){
+        TempCurveViewController *tempVC = [[TempCurveViewController alloc] init];
+        tempVC.foodModel = self.foodModel;
+        tempVC.foodModel.number = 1;
+        [self.navigationController pushViewController:tempVC animated:YES];
+    }else if (indexPath.row == 2){
+        TimerViewController *timeVC = [[TimerViewController alloc] init];
+        timeVC.foodModel = self.foodModel;
+        [self.navigationController pushViewController:timeVC animated:YES];
+    }
+    
+}
+
+-(void)timeCountDownEnd
+{
+//    //判断是否在停留在当前VC
+//    UIViewController *lastVC = [self.navigationController.viewControllers lastObject];
+//    if (![lastVC isKindOfClass:[SingleDeviceViewController class]]) {
+//        return;
+//    }
+    
+    self.timeAlert = [[TKAlertView alloc] initWithTitle:[self languageKey:@"CountTimeEnd"]
+                                            buttonTitle:[self languageKey:@"Fine"]
+                                             sureAction:^{
+                                                 [[SystemManager shareManager] pauseMusic];
+                                                 self.timeAlert = nil;
+                                             }];
+    [self.timeAlert show];
+    [[SystemManager shareManager] sendLocalNotificationTime];
+    [[SystemManager shareManager] playTimeAlarm];
+}
+
+#pragma mark - 背景闪
+-(void)setNumberTwinkleWithState:(BOOL)state
+{
+    if (state == YES) {
+        if (self.backgroundTimer != nil) {
+            [self.backgroundTimer invalidate];
+            self.backgroundTimer = nil;
+        }
+        self.backgroundTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(changeBackgroundState) userInfo:nil repeats:YES];
+    }else{
+        if (self.backgroundTimer != nil) {
+            [self.backgroundTimer invalidate];
+            self.backgroundTimer = nil;
+        }
+        self.isShowHighlighted = NO;
+        [self changeBackgroundStateWithHighlighted:self.isShowHighlighted];
+    }
+}
+
+-(void)changeBackgroundState
+{
+    self.isShowHighlighted = !self.isShowHighlighted;
+    [self changeBackgroundStateWithHighlighted:self.isShowHighlighted];
+}
+
+-(void)changeBackgroundStateWithHighlighted:(BOOL)highlighted
+{
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
+    SingleDeviceCell *cell = (SingleDeviceCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    [cell setTextColorWithSelected:highlighted];
+}
+
+
+#pragma mark - 蓝牙断开连接
+-(void)blueDisconnect
+{
+    //蓝牙断开后，清除定时刷新
+    if (self.timer != nil) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+    
+    //蓝牙断开后，停止播放音乐
+    [[SystemManager shareManager] pauseMusic];
+    
+    if (self.timeAlert != nil) {
+        [self.timeAlert removeFromSuperview];
+        self.timeAlert = nil;
+    }
+    
+    if (self.tempAlert != nil) {
+        [self.tempAlert removeFromSuperview];
+        self.tempAlert = nil;
+    }
+}
+
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    if ([self.navigationController.viewControllers count] < 3) {
+        if (self.timer != nil) {
+            [self.timer invalidate];
+            self.timer = nil;
+        }
+        
+        if (self.backgroundTimer != nil) {
+            [self.backgroundTimer invalidate];
+            self.backgroundTimer = nil;
+        }
+        
+        if (self.clearTime) {
+            [self.clearTime invalidate];
+            self.clearTime = nil;
+        }
+    }
+    
+    [super viewDidDisappear:animated];
+}
+
+-(void)dealloc
+{
+    [[SystemManager shareManager] pauseMusic];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    NSLog(@"single dealloc");
+}
+
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

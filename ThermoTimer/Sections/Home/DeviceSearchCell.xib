@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="91" id="KGk-i7-Jjw" customClass="DeviceSearchCell">
+            <rect key="frame" x="0.0" y="0.0" width="345" height="92"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="345" height="91"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="home_icon_logo" translatesAutoresizingMaskIntoConstraints="NO" id="uZg-rt-Iop">
+                        <rect key="frame" x="225" y="0.0" width="120" height="91"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="120" id="VOO-zE-18Q"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="正在连接我的产品" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vTi-Wr-1K9">
+                        <rect key="frame" x="18" y="13" width="309" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="dB4-46-Hqb"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AwR-wE-UMK">
+                        <rect key="frame" x="18" y="56" width="100" height="30"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="100" id="aEP-jM-beY"/>
+                            <constraint firstAttribute="height" constant="30" id="eSl-nc-rHi"/>
+                        </constraints>
+                        <state key="normal" title="重新搜索" backgroundImage="btn_red">
+                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="uZg-rt-Iop" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="-8" id="0Io-Hp-7he"/>
+                    <constraint firstItem="uZg-rt-Iop" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottomMargin" constant="8" id="1NA-B7-6wF"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="uZg-rt-Iop" secondAttribute="trailing" constant="-8" id="2DU-nG-SyH"/>
+                    <constraint firstItem="AwR-wE-UMK" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="10" id="CNx-KL-5t1"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="AwR-wE-UMK" secondAttribute="bottom" constant="-3" id="EQ9-Uk-4h3"/>
+                    <constraint firstItem="vTi-Wr-1K9" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="5" id="MiK-Ak-OGx"/>
+                    <constraint firstItem="vTi-Wr-1K9" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="10" id="nlh-pG-VTo"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="vTi-Wr-1K9" secondAttribute="trailing" constant="10" id="tmB-XV-gL1"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="connectLabel" destination="vTi-Wr-1K9" id="kjn-f4-tbd"/>
+                <outlet property="reSearchButton" destination="AwR-wE-UMK" id="JDu-rc-1oA"/>
+            </connections>
+            <point key="canvasLocation" x="294.5" y="456"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="btn_red" width="120" height="33"/>
+        <image name="home_icon_logo" width="110" height="80"/>
+    </resources>
+</document>

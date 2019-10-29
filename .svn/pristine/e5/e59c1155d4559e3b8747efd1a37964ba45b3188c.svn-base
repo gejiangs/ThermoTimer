@@ -1,0 +1,154 @@
+/*
+ Localizable.strings
+ ThermoTimer
+ 
+ Created by gejiangs on 15/8/10.
+ Copyright (c) 2015年 gejiangs. All rights reserved.
+ */
+
+/*******Home********/
+"image_four_name"           = "imageFour_en";
+"image_two_name"            = "imageTwo_en";
+"image_one_name"            = "imageOne_en";
+"home_bg_top"               = "home_bg_top_en";
+"Welcome"                   = "Welcome";
+"NoEnableDevice"            = "无可用设备";
+"HomeTitle"                 = "";
+"FoodTitle"                 = "Food Choice";
+"FoodAddTitle"              = "Temperature Setting";
+"FoodTipTitle"              = "Title";
+"FoodPlaceTitle"            = "Introduction";
+"ConnectTitle"              = "Connecting the product";
+"ConnectNoFindTitle"        = "我们无法在附近找到 T2 产品";
+"ConnectOpenBlue"           = "Step:Turn on bluetoolh";
+"ConnectOpenT2"             = "| Turn on T2 product";
+"BlueTitle"                 = "Options";
+"Search"                    = "Search";
+"4ProbGrill"                = "4 Probes";
+"MiniGrill"                 = "Single probe";
+"NormalTemp"                = "Environment Temperature";
+"textLabel"                 = "This is a photo illustration";
+
+
+
+"TempIndoor"                = "INDOOR";
+"TempBeef"                  = "BEEF";
+"TempLamb"                  = "LAMB";
+"TempChicken"               = "CHICKEN";
+"TempTurkey"                = "TURKEY";
+"TempPork"                  = "PORK";
+"TempFish"                  = "FISH";
+"TempHambuge"               = "HAMBUGE";
+
+"TempSetting"               = "Setting Degree";
+"TempWelldone"              = "Welldone";
+"TempRare"                  = "Rare";
+"TempMedRare"               = "MedRare";
+"TempMeddium"               = "Meddium";
+"TempMedAll"                = "Welldone";
+"TempComfortable"           = "Comfortable";
+"CurveSet"                  = "Line Diagram";
+"TimeSet"                   = "Timer Setting";
+"CurrentTemp"               = "Current Temperature";
+"GoalTemp"                  = "Default Temperature";
+"CountTime"                 = "Count down";
+
+"DeviceNeedle"              = "Probe";
+"CountTimeTitle"            = "Timer";
+"TempSettingTitle"          = "Temperature Setting";
+"TimeNoSetTitle"            = "Default";
+"DeviceCountTimeEnd"        = "    Probe%@-Time done！";
+"CountTimeEnd"              = "    Time is ready！";
+"TempAlarm"                 = "    Done！";
+"TempIndexAlarm"            = "    Probe%@ temperature alarm！";
+"Time"                      = "Time";
+"Temperature"               = "Temp";
+"TipInputName"              = "Please input in the name";
+"TipInputTemp"              = "Please input in the temperature";
+
+/*********Button*********/
+"StartCooking"              = "OK";
+"Delete"                    = "Delete";
+"Start"                     = "Start";
+"Reset"                     = "Reset";
+"Save"                      = "Set";
+"Fine"                      = "OK";
+
+/*******Setting********/
+
+"SettingTitle"              = "Setting";
+"SettingTempUnit"           = "Temperature units";
+"SettingTimerAlarm"         = "Timer Alarm";
+"SettingTempAlarm"          = "Temperature Alarm";
+"SaveSuccess"               = "Save Success";
+"Alarm_Ringtone_1"          = "Ringtone_1";
+"Alarm_Ringtone_2"          = "Ringtone_2";
+"Alarm_Ringtone_3"          = "Ringtone_3";
+"Alarm_Ringtone_4"          = "Ringtone_4";
+
+/*******About********/
+"AboutTitle"                = "About";
+"Version"                   = "Version";
+"Email"                     = "Email:";
+"Website"                   = "Website:";
+"ProductDesc1"              = "        This product can be connected to four probes . The alarm reminds youwhen the food is ready or time is up It can be used as a timer; There are many types of food and meat for you to choose; Add more types of food and set up ideal temperatures and times~!";
+"ProductDesc4"              = "        This product can be connected to a single probe. The alarm reminds you when the food is ready or time is up It can be used as a timer; There are many types of food and meat for you to choose; Add more types of food and set up ideal temperatures and times~!";
+"ProductIcon1"              = "Bluetooth";
+"ProductIcon2"              = "The battery";
+"ProductIcon3"              = "Temperature setting";
+"ProductIcon4"              = "The alarm";
+"ProductIcon5"              = "The temperature curve";
+"ProductIcon6"              = "The timer";
+
+
+/*******Operation********/
+"OperationTitle"            = "Manual";
+"OperationTitle1"           = "Download T2 App";
+"OperationTitle2"           = "Start the App and Connect with bluetooth";
+"OperationTitle3"           = "Connect T2 sensor probes";
+"OperationTitle4"           = "Set up the temperature and time,select items or default";
+"OperationTitle5"           = "Hear the alarm,food is ready paying attention to alarm";
+"OperationTitle6"           = "Warning";
+"OperationDesc1"            = "Download        from App store;";
+"OperationDesc2"            = "";
+"OperationDesc3"            = "";
+"OperationDesc4"            = "";
+"OperationDesc5"            = "Alarm reminds you when the temperature reaches desired temperature";
+"OperationDesc6"            = "Wash probes thoroughly after using and use towel to dry it also put the product away from kids to avoid accident";
+
+
+
+/*******Timer********/
+"TimerTitle"                = "Timer";
+"TimerSetError"             = "Timer cannot be set to zero";
+
+
+
+
+
+/*******More*********/
+"MoreTitle"                 = "More";
+"MoreClose"                 = "Close";
+"MoreTimer"                 = "Timer";
+"MoreSetting"               = "Setting";
+"MoreOperation"             = "Manual";
+"MoreSearch"                = "Re-search";
+"MoreAbout"                 = "About";
+
+
+
+/********Tip*********/
+"Connecting"                = "Connecting...";
+"ConnectFailure"            = "Connection failed";
+"ConnectSuccess"            = "Connection success";
+"Searching"                 = "Searching...";
+"Tip"                       = "Tip";
+"Cancel"                    = "Cancel";
+"OK"                        = "OK";
+"NotFindDevice"             = "Did not search to the device, re search？";
+"UnknowType"                = "Unknown Bluetooth type";
+"blueDisconnect"            = "Bluetooth has been disconnected";
+"SureDeleteFood"            = "Confirm delete %@ ?";
+"Hour"                      = "H";
+"Minute"                    = "M";
+"Second"                    = "S";

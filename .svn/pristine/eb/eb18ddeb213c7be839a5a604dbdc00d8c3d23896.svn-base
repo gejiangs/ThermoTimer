@@ -1,0 +1,290 @@
+//
+//  HomeViewController.m
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/10.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import "HomeViewController.h"
+#import "BluetoothManager.h"
+#import "MultipleDeviceViewController.h"
+#import "SingleDeviceViewController.h"
+#import "DeviceSearchCell.h"
+#import "MJRefresh.h"
+#import "BlueViewController.h"
+#import "BottomMoreView.h"
+#import "ProductViewController.h"
+
+@interface HomeViewController ()
+
+//@property (nonatomic, strong)   UIButton *stateButton;    //蓝牙设备状态view
+@property (nonatomic, strong)   DeviceSearchCell *searchCell;
+
+@end
+
+@implementation HomeViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = LanguageKey(@"HomeTitle");
+    
+    //初始化
+    [[BluetoothManager shareManager] initCentral];
+    
+    [self initUI];
+    [self setMoreViewHidden:YES];
+    
+}
+
+-(void)initUI
+{
+    self.topImageView.hidden = NO;
+    
+//    self.stateButton = [self.view addButtonWithTitle:NSLocalizedString(@"Welcome", nil) target:nil action:nil];
+//    [_stateButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//    [_stateButton setBackgroundImage:[UIImage imageNamed:@"home_btn_up"] forState:UIControlStateNormal];
+//    [_stateButton makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerX.equalTo(self.view);
+//        make.top.offset(75);
+//        make.size.mas_equalTo(Size(140, 40));
+//    }];
+    [self.view bringSubviewToFront:self.topImageView];
+    
+    [self setTableViewStyle:UITableViewStyleGrouped];
+    [self.tableView updateConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(100);
+    }];
+    
+//    WEAKSELF
+//    [self.tableView addHeaderWithCallback:^{
+//        [weakSelf startScanBluetooth];
+//    }];
+//    self.tableView.headerPullToRefreshText = @"下拉扫描设备";
+//    self.tableView.headerRefreshingText = @"正在扫描设备";
+//    self.tableView.headerReleaseToRefreshText = @"松开立即扫描设备";
+    
+    WEAKSELF
+    BottomMoreView *moreView = [[BottomMoreView alloc] initWithIsHome:YES];
+    moreView.RowSelectedIndex = ^(NSInteger selectedIndex){
+        [weakSelf pushMoreViewControllerWithIndex:selectedIndex];
+    };
+    [moreView showInView:self.view];
+    
+    [self dispatchTimerWithTime:0.1 block:^{
+        [self startScanBluetooth];
+    }];
+    
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
+//开始扫描设备
+-(void)startScanBluetooth
+{
+    if (![[BluetoothManager shareManager] supportHardware]) {
+        return;
+    }
+    self.contentList = [NSMutableArray array];
+    [self.searchCell startArrowAnimation];
+    [[BluetoothManager shareManager] startScanBlock:^(NSArray *peripheralArray) {
+        [self.searchCell stopArrowAnimation];
+        self.contentList = [NSMutableArray arrayWithArray:peripheralArray];
+        
+        if ([self.navigationController.viewControllers count] == 1) {
+            
+            BlueViewController *blueVC = [[BlueViewController alloc] init];
+            blueVC.contentList = self.contentList;
+            [self.navigationController pushViewController:blueVC animated:YES];
+        }
+        
+    } finally:^{
+        [self.searchCell stopArrowAnimation];
+        if (self.contentList == nil || [self.contentList count] == 0)
+        {
+            NSArray *titles = @[[Language key:@"Cancel"], [Language key:@"MoreSearch"]];
+            [UIAlertView showTitle:[Language key:@"Tip"] message:[Language key:@"NotFindDevice"] buttonTitles:titles block:^(NSInteger buttonIndex) {
+                if (buttonIndex == 1) {
+                    [self startScanBluetooth];
+                }
+            }];
+        }
+    }];
+}
+
+//重新搜索
+-(void)reSearchClicked:(UIButton *)sender
+{
+    if (![[BluetoothManager shareManager] supportHardware]) {
+        NSArray *titles = @[[Language key:@"Cancel"], [Language key:@"OpenBlue"]];
+        [UIAlertView showTitle:[self languageKey:@"Tip"] message:[self languageKey:@"BlueNotOpenTip"] buttonTitles:titles block:^(NSInteger buttonIndex) {
+            if (buttonIndex == 1) {
+                //打开蓝牙设置界面
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"prefs:root=Bluetooth"]];
+            }
+        }];
+    }else{
+        [self startScanBluetooth];
+    }
+}
+
+#pragma mark UITableView Delegate
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 3;
+}
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (section == 0) {
+        return 1;
+    }
+    return 2;
+}
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 0) {
+        return [self getDeviceSearchCell:tableView cellForRowAtIndexPath:indexPath];
+    }
+    static NSString *ident = @"cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ident];
+    }
+    
+    for (UIView *view in cell.contentView.subviews) {
+        if ([view isKindOfClass:[UIImageView class]]) {
+            [view removeFromSuperview];
+        }
+    }
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    
+    if (indexPath.row == 0) {
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pic_1"]];
+        imageView.contentMode = UIViewContentModeScaleAspectFill;
+        imageView.layer.masksToBounds = YES;
+        [cell.contentView addSubview:imageView];
+        [imageView makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(cell.contentView);
+        }];
+        if (indexPath.section == 1) {
+            imageView.image = [UIImage imageNamed:[self languageKey:@"image_two_name"]];
+        }else{
+            imageView.image = [UIImage imageNamed:[self languageKey:@"image_one_name"]];
+        }
+        
+        
+        /// 显示文字
+        UILabel *textLabel = [imageView addLabelWithText:[self languageKey:@"textLabel"]];
+        textLabel.textColor = [UIColor whiteColor];
+        textLabel.font = [UIFont systemFontOfSize:8.0f];
+        [imageView addSubview:textLabel];
+        [textLabel makeConstraints:^(MASConstraintMaker *make) {
+            make.right.equalTo(-5);
+            make.bottom.equalTo(-5);
+        }];
+        
+    }else if (indexPath.row == 1) {
+        if (indexPath.section == 1) {
+            cell.textLabel.text = [self languageKey:@"2ProbGrill"];
+        }else{
+            cell.textLabel.text = [self languageKey:@"MiniGrill"];
+        }
+        cell.textLabel.textColor = APP_Red_Color;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }
+    
+    return cell;
+}
+
+-(UITableViewCell *)getDeviceSearchCell:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *ident = @"search_cell";
+    DeviceSearchCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
+    if (cell == nil) {
+        cell = [[DeviceSearchCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ident];
+    }
+    self.searchCell = cell;
+    
+    cell.tag = indexPath.section;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    [cell.reSearchButton addTarget:self action:@selector(reSearchClicked:) forControlEvents:UIControlEventTouchUpInside];
+    
+    return cell;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section ==  0) {
+        return 100.f;
+    }
+    
+    if (indexPath.row == 0) {
+        return (ScreenWidth / 3.0f);
+    }
+    
+    return 35.f;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0.1f;
+}
+
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (indexPath.section == 0) {
+        return;
+    }
+    
+    ProductViewController *vc = [[ProductViewController alloc] init];
+    
+    if (indexPath.section == 1) {
+        vc.devictType = DeviceTypeFour;
+    }else{
+        vc.devictType = DeviceTypeOne;
+    }
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+-(void)pushMoreViewControllerWithIndex:(NSInteger)index
+{
+    NSArray *VCNames = @[@"SettingViewController", @"OperationViewController", @"", @"AboutViewController"];
+    if (index == 2) {
+        [self startScanBluetooth];
+        return;
+    }
+    [self pushViewControllerName:[VCNames objectAtIndex:index] animated:YES];
+    
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

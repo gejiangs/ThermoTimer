@@ -1,0 +1,393 @@
+//
+//  MultipleDeviceViewController.m
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/10.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import "MultipleDeviceViewController.h"
+#import "TempCurveViewController.h"
+#import "MultipleDeviceCell.h"
+#import "FoodModel.h"
+#import "BluetoothManager.h"
+#import "BluetoothManager+Category.h"
+#import "DeviceStatuView.h"
+#import "TKAlertView.h"
+#import "DataManager.h"
+
+@interface MultipleDeviceViewController ()
+
+@property (weak, nonatomic) IBOutlet UIButton *backButton;
+@property (nonatomic, assign)   NSInteger editIndex;
+@property (nonatomic, strong)   NSMutableArray *foods;
+
+@property (nonatomic, strong)   NSTimer *timer;
+@property (nonatomic, strong)   DeviceStatuView *deviceInfoView;
+
+@property (nonatomic, strong)   TKAlertView *tempAlert;
+@property (nonatomic, strong)   TKAlertView *timeAlert;
+
+@end
+
+@implementation MultipleDeviceViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self initUI];
+}
+
+-(void)initUI
+{
+    self.editIndex = -1;
+    
+    [self.view bringSubviewToFront:self.backButton];
+    self.topImageView.hidden = NO;
+    
+    [self setTableViewStyle:UITableViewStyleGrouped];
+    [self.tableView updateConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(130);
+    }];
+    
+    self.foods = [[DataManager shareManager] getMultipleFoodmodels];
+    for (FoodModel *m in self.foods) {
+        //显示需要显示温度警报框
+        [[SystemManager shareManager] showTempAlertWithIndex:m.number];
+    }
+    
+    [self showDeviceInfoView];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(blueDisconnect) name:NotificationBlueDisconnect object:nil];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    
+    [self.tableView reloadData];
+    
+    if (self.timer != nil) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+    
+    [self refreshTableViewCell];
+    
+}
+
+-(void)showDeviceInfoView
+{
+    if (self.deviceInfoView != nil) {
+        return;
+    }
+    self.deviceInfoView = [[DeviceStatuView alloc] init];
+    [self.view addSubview:_deviceInfoView];
+    
+    [_deviceInfoView makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(Size(30, 45));
+        make.top.offset(70);
+        make.right.offset(-10);
+    }];
+}
+
+-(void)replaceFoodInfo:(FoodModel *)model
+{
+    FoodModel *foodModel = [self.foods objectAtIndex:self.editIndex];
+    
+    foodModel.type = model.type;
+    foodModel.selectedIndex = model.selectedIndex;
+    foodModel.customValue = model.customValue;
+    foodModel.name = model.name;
+    foodModel.tag = model.tag;
+    
+    [self.foods replaceObjectAtIndex:self.editIndex withObject:foodModel];
+    [self.tableView reloadData];
+    
+    [[DataManager shareManager] saveMultipleFoodmodel:foodModel];
+    
+    CGFloat temp = foodModel.getCustomValue;
+    if (model.selectedIndex >= 0) {
+        temp = foodModel.selectedValue;
+    }
+    [[BluetoothManager shareManager] sendMaxTemp:temp number:foodModel.number];
+    
+    //根据编号，设置探头温度警报框需要显示
+    [[SystemManager shareManager] showTempAlertWithIndex:model.number];
+}
+
+-(void)setCountdownTime:(NSInteger)time
+{
+    for (FoodModel *model in self.foods)
+    {
+        model.countDownTime = time;
+        [[DataManager shareManager] saveMultipleFoodmodel:model];
+    }
+}
+
+//清除自定义温度
+-(void)clearCustomValueWithTag:(NSInteger)tag
+{
+    BOOL hasTag = NO;
+    for (FoodModel *model in self.foods) {
+        if (tag == model.tag) {
+            model.selectedIndex = -1;
+            model.customValue = -1;
+            model.tag = 0;
+            model.type = -1;
+            model.name = @"";
+            
+            hasTag = YES;
+        }
+    }
+    
+    //同时发送锁铃命令
+    if (hasTag) {
+        [[BluetoothManager shareManager] blocking];
+    }
+}
+
+
+- (IBAction)backClicked:(UIButton *)sender
+{
+    //返回，手动断开蓝牙，清除保存信息
+    [[DataManager shareManager] clearCurrentMultipleFoodmodel];
+    
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+
+
+//刷新UITableViewCell内容
+-(void)refreshTableViewCell
+{
+    NSInteger currentTime = [[[NSDate alloc] init] timeIntervalSince1970];
+    for (FoodModel *model in self.foods) {
+        
+        
+        //温度警报
+        CGFloat v = model.selectedValue;
+        if (model.selectedIndex == -1) {
+            v = model.getCustomValue;
+        }
+        
+        if (model.number == 1) {
+            model.deviceTempValue = [SystemManager shareManager].deviceTempOne;
+        }else if (model.number == 2){
+            model.deviceTempValue = [SystemManager shareManager].deviceTempTwo;
+        }else if (model.number == 3){
+            model.deviceTempValue = [SystemManager shareManager].deviceTempThree;
+        }else if (model.number == 4){
+            model.deviceTempValue = [SystemManager shareManager].deviceTempFour;
+        }
+        
+       
+        //判断是否需要显示温度警报框
+        if (v >= 0 && model.deviceTempValue >= v && [[SystemManager shareManager] getNeedTempAlertIndex:model.number]) {
+            [self showTempAlertViewWithIndex:model.number];
+        }
+        
+        
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:model.number-1];
+        MultipleDeviceCell *cell = (MultipleDeviceCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+        [cell setCellInfo:model];
+        
+        if (model.countDownTime - currentTime == 0) {
+            
+            [self timeCountDownEndWithIndex:model.number-1];
+            [cell setNumberTwinkleWithState:YES];
+        }
+    }
+    
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.f
+                                                  target:self
+                                                selector:@selector(refreshTableViewCell)
+                                                userInfo:nil
+                                                 repeats:NO];
+
+}
+
+//提示温度警报
+-(void)showTempAlertViewWithIndex:(NSInteger)index
+{
+    //判断是否在停留在当前VC
+//    UIViewController *lastVC = [self.navigationController.viewControllers lastObject];
+//    if (![lastVC isKindOfClass:[MultipleDeviceViewController class]]) {
+//        return;
+//    }
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:index-1];
+    MultipleDeviceCell *cell = (MultipleDeviceCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    [cell setNumberTwinkleWithState:YES];
+    
+    [[SystemManager shareManager] hideTempAlertWithIndex:index];
+    
+    [[BluetoothManager shareManager] deblocking];
+    NSArray *number = @[@"", @"①", @"②", @"③", @"④"];
+    self.tempAlert = [[TKAlertView alloc] initWithTitle:[NSString stringWithFormat:[self languageKey:@"TempIndexAlarm"], [number objectAtIndex:index]]
+                                                buttonTitle:[self languageKey:@"Fine"]
+                                                 sureAction:^{
+                                                     [cell setNumberTwinkleWithState:NO];
+                                                     [[BluetoothManager shareManager] blocking];
+                                                     [[SystemManager shareManager] pauseMusic];
+                                                     
+                                                     [[SystemManager shareManager] showTempAlertTimerWithIndex:self.tempAlert.tag];
+                                                     self.tempAlert = nil;
+                                                 }];
+    self.tempAlert.tag = index;
+    [self.tempAlert show];
+    [[SystemManager shareManager] sendLocalNotificationTemp];
+    [[SystemManager shareManager] playTempAlarm];
+}
+
+#pragma mark UITableView Delegate
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return [self.foods count];
+}
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 1;
+}
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *ident = @"cell";
+    MultipleDeviceCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
+    if (cell == nil) {
+        cell = [[MultipleDeviceCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ident];
+    }
+    
+    cell.tag = indexPath.section;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    
+    FoodModel *model = [self.foods objectAtIndex:indexPath.section];
+    model.number = indexPath.section+1;
+    
+    [cell setCellInfo:model];
+    
+    return cell;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 80.f;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0.1f;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    self.editIndex = indexPath.section;
+    
+    FoodModel *model = [self.foods objectAtIndex:indexPath.section];
+    
+    TempCurveViewController *tempVC = [[TempCurveViewController alloc] init];
+    tempVC.foodModel = model;
+    [self.navigationController pushViewController:tempVC animated:YES];
+}
+
+#pragma mark TimeCountDown
+-(void)timeCountDownEndWithIndex:(NSInteger)index
+{
+//    //判断是否在停留在当前VC
+//    UIViewController *lastVC = [self.navigationController.viewControllers lastObject];
+//    if (![lastVC isKindOfClass:[MultipleDeviceViewController class]]) {
+//        return;
+//    }
+    
+    if (self.timeAlert != nil) {
+        [self.timeAlert removeFromSuperview];
+        self.timeAlert = nil;
+        
+        for (int i=0; i<4; i++) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:i];
+            MultipleDeviceCell *cell = (MultipleDeviceCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+            [cell setNumberTwinkleWithState:NO];
+        }
+    }
+    
+    NSArray *number = @[@"①", @"②", @"③", @"④"];
+    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"DeviceCountTimeEnd", nil), [number objectAtIndex:index]];
+    self.timeAlert = [[TKAlertView alloc] initWithTitle:message
+                                                buttonTitle:[self languageKey:@"Fine"]
+                                                 sureAction:^{
+                                                     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:index];
+                                                     MultipleDeviceCell *cell = (MultipleDeviceCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+                                                     [cell setNumberTwinkleWithState:NO];
+                                                     [[SystemManager shareManager] pauseMusic];
+                                                     self.timeAlert = nil;
+                                                 }];
+    [self.timeAlert show];
+    
+    [[SystemManager shareManager] sendLocalNotificationTime];
+    [[SystemManager shareManager] playTimeAlarm];
+}
+
+#pragma mark - 蓝牙断开连接
+-(void)blueDisconnect
+{
+    //蓝牙断开后，清除定时刷新
+    if (self.timer != nil) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+    
+    //蓝牙断开后，停止播放音乐
+    [[SystemManager shareManager] pauseMusic];
+    
+    if (self.timeAlert != nil) {
+        [self.timeAlert removeFromSuperview];
+        self.timeAlert = nil;
+    }
+    
+    if (self.tempAlert != nil) {
+        [self.tempAlert removeFromSuperview];
+        self.tempAlert = nil;
+    }
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    if ([self.navigationController.viewControllers count] < 3) {
+        if (self.timer != nil) {
+            [self.timer invalidate];
+            self.timer = nil;
+        }
+    }
+    [super viewDidDisappear:animated];
+}
+
+- (void)dealloc
+{
+    [[SystemManager shareManager] pauseMusic];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    NSLog(@"multiple dealloc");
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15A284" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TimerViewController">
+            <connections>
+                <outlet property="footerView" destination="vxj-YK-fYe" id="Mes-Jc-sEV"/>
+                <outlet property="handlerView" destination="reP-nu-5sL" id="CDL-pl-zJd"/>
+                <outlet property="pickerView" destination="DXs-JL-tJ2" id="Mwd-yH-vqT"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DXs-JL-tJ2">
+                    <rect key="frame" x="0.0" y="84" width="600" height="200"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="200" id="DrM-So-l4L"/>
+                    </constraints>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="fPh-po-fzQ"/>
+                        <outlet property="delegate" destination="-1" id="tNP-Xv-zj0"/>
+                    </connections>
+                </pickerView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="reP-nu-5sL">
+                    <rect key="frame" x="0.0" y="84" width="600" height="200"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vxj-YK-fYe">
+                    <rect key="frame" x="-1" y="284" width="602" height="100"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="100" id="dDQ-P7-1wt"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="reP-nu-5sL" secondAttribute="trailing" id="18s-lo-8m6"/>
+                <constraint firstItem="reP-nu-5sL" firstAttribute="top" secondItem="DXs-JL-tJ2" secondAttribute="top" id="7J0-iJ-49t"/>
+                <constraint firstAttribute="trailing" secondItem="DXs-JL-tJ2" secondAttribute="trailing" id="80H-Xn-xl6"/>
+                <constraint firstItem="vxj-YK-fYe" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="-1" id="8K9-Cc-G5k"/>
+                <constraint firstItem="DXs-JL-tJ2" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Jh4-lw-sdm"/>
+                <constraint firstItem="DXs-JL-tJ2" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="84" id="O03-Eq-afr"/>
+                <constraint firstItem="vxj-YK-fYe" firstAttribute="top" secondItem="DXs-JL-tJ2" secondAttribute="bottom" id="cYw-Mg-hYK"/>
+                <constraint firstItem="reP-nu-5sL" firstAttribute="height" secondItem="DXs-JL-tJ2" secondAttribute="height" id="min-Hr-IYB"/>
+                <constraint firstAttribute="trailing" secondItem="vxj-YK-fYe" secondAttribute="trailing" constant="-1" id="rCS-Ge-4jb"/>
+                <constraint firstItem="reP-nu-5sL" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="rPW-zO-aug"/>
+            </constraints>
+        </view>
+    </objects>
+</document>

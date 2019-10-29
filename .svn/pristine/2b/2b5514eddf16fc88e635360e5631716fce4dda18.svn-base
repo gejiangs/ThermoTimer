@@ -1,0 +1,151 @@
+/*
+ Localizable.strings
+ ThermoTimer
+ 
+ Created by gejiangs on 15/8/10.
+ Copyright (c) 2015年 gejiangs. All rights reserved.
+ */
+
+/*******Home********/
+"image_four_name"           = "imageFour_en";
+"image_one_name"            = "imageOne_en";
+"home_bg_top"               = "home_bg_top";
+"Welcome"                   = "Accueillir";
+"NoEnableDevice"            = "Aucun périphérique disponible";
+"HomeTitle"                 = "Thermo&Chronométreur";
+"FoodTitle"                 = "Choisis la nourriture";
+"FoodAddTitle"              = "Réglages";
+"FoodTipTitle"              = "Titre";
+"FoodPlaceTitle"            = "The new default name";
+"ConnectTitle"              = "Connectez mon produit";
+"ConnectNoFindTitle"        = "Ne trouvez pas le T2 produit";
+"ConnectOpenBlue"           = "Suggérer：Activer le Bluetooth";
+"ConnectOpenT2"             = "| Ouvert T2 Les produits";
+"BlueTitle"                 = "Choisir";
+"Search"                    = "Recherche";
+"4ProbGrill"                = "4 Sondes";
+"MiniGrill"                 = "Seule Sonde";
+"NormalTemp"                = "Température ambiante";
+"textLabel"                 = "C'est la photo d'illustration";
+"BlueNotOpenTip"            = "Bluetooth est pas allumé, activez Bluetooth";
+"OpenBlue"                  = "Activer le Bluethooth";
+
+"TempIndoor"                = "Ambiante";
+"TempBeef"                  = "Boeuf";
+"TempLamb"                  = "Agneau";
+"TempChicken"               = "Poulet";
+"TempTurkey"                = "Dinde";
+"TempPork"                  = "Porc";
+"TempFish"                  = "Poissons";
+"TempHambuge"               = "Hambourg";
+
+"TempSetting"               = "Custom";
+"TempWelldone"              = "Standard";
+"TempRare"                  = "Raro";
+"TempMedRare"               = "MedRare";
+"TempMeddium"               = "Medio ";
+"TempMedAll"                = "Welldone";
+"TempComfortable"           = "Confortable";
+"CurveSet"                  = "Courbe Visualiser";
+"TimeSet"                   = "Réglez l’heure";
+"CurrentTemp"               = "Courant température";
+"GoalTemp"                  = "Objectifs température ";
+"CountTime"                 = "Compte à rebours";
+
+"DeviceNeedle"              = "La sonde";
+"CountTimeTitle"            = "Chronométreur";
+"TempSettingTitle"          = "Réglages";
+"TimeNoSetTitle"            = "Pas préinstallé";
+"DeviceCountTimeEnd"        = "    La sonde%@-Le temps est écoulé!";
+"CountTimeEnd"              = "    Le temps est écoulé!";
+"TempAlarm"                 = "    Fin！";
+"TempIndexAlarm"            = "    La sonde%@Alarme de température！";
+"Time"                      = "Le temps";
+"Temperature"               = "Température";
+"TipInputName"              = "S'il vous pla?t remplir le nom";
+"TipInputTemp"              = "S'il vous pla?t remplir la température appropriée";
+
+/*********Button*********/
+"StartCooking"              = "Déterminer";
+"Delete"                    = "Effacer";
+"Start"                     = "Démarrer";
+"Reset"                     = "Réinitialiser";
+"Save"                      = "Enregistrer";
+"Fine"                      = "Oui";
+
+/*******Setting********/
+
+"SettingTitle"              = "Réglages";
+"SettingTempUnit"           = "Unités température";
+"SettingTimerAlarm"         = "Alarme de Chronométrage ";
+"SettingTempAlarm"          = "Alarme de température";
+"SaveSuccess"               = "Enregistrée avec succès";
+"Alarm_Ringtone_1"          = "Son 1";
+"Alarm_Ringtone_2"          = "Son 2";
+"Alarm_Ringtone_3"          = "Son 3";
+"Alarm_Ringtone_4"          = "Son 4";
+
+/*******About********/
+"AboutTitle"                = "à Propos";
+"Version"                   = "Version";
+"Email"                     = "Courriel:";
+"Website"                   = "Le website:";
+"ProductDesc1"              = "        Lorsque le produit est connecté de T2 la sonde simple.Quand la température atteint ou le compte à rebours est terminé, il sonnera,Il peut être utilisé seul comme un temporisateur à utiliser;Il contient des variété de types de cuisson que nous pouvons choisir,Nous pouvons ajouter plus des températures et les durées de cuisson. ";
+"ProductDesc4"              = "        Lorsque le produit est connecté de T2 la sonde de quatre.Quand la température atteint ou le compte à rebours est terminé, il sonnera,Il peut être utilisé seul comme un temporisateur à utiliser;Il contient des variété de types de cuisson que nous pouvons choisir,Nous pouvons ajouter plus des températures et les durées de cuisson. ";
+"ProductIcon1"              = "Bluetooth";
+"ProductIcon2"              = "Batterie";
+"ProductIcon3"              = "Réglages";
+"ProductIcon4"              = "Alarme";
+"ProductIcon5"              = "Courbe température";
+"ProductIcon6"              = "Chronométreur";
+
+
+/*******Operation********/
+"OperationTitle"            = "Mode d'emploi";
+"OperationTitle1"           = "Télécharger l'application ";
+"OperationTitle2"           = "Démarrez l'application et Connectez l'appareil par Bluetooth ";
+"OperationTitle3"           = "Connectez la sonde";
+"OperationTitle4"           = "Sélectionnez les options alimentaires ou de la température sur mesure";
+"OperationTitle5"           = "Attention à la sonnerie d'alarme";
+"OperationTitle6"           = "Consignes";
+"OperationDesc1"            = "Téléchargé sur l'Apple Store      , cliquez sur l'ic?ne après l'installation;";
+"OperationDesc2"            = "";
+"OperationDesc3"            = "";
+"OperationDesc4"            = "";
+"OperationDesc5"            = "Alarme vous rappelle quand la température atteint la température désirée;";
+"OperationDesc6"            = "Lorsque le produit est ne cours d'utilisation， Rincez la sonde avec de l'eau,Essuyez avec le chiffon doux.";
+
+
+
+/*******Timer********/
+"TimerTitle"                = "Chronométreur";
+"TimerSetError"             = "Minuterie ne peut être fixé à zéro";
+
+
+
+
+/*******More*********/
+"MoreTitle"                 = "De plus";
+"MoreClose"                 = "Arrêter";
+"MoreTimer"                 = "Chronométreur";
+"MoreSetting"               = "Réglages";
+"MoreOperation"             = "Mode d'emploi";
+"MoreSearch"                = "Recherche";
+"MoreAbout"                 = "à Propos";
+
+
+
+/********Tip*********/
+"Connecting"                = "De liaison...";
+"ConnectFailure"            = "échec de la connexion";
+"Searching"                 = "Recherche...";
+"Tip"                       = "Suggérér";
+"Cancel"                    = "Annulé";
+"OK"                        = "Déterminer";
+"NotFindDevice"             = "Aucun dispositif de recherche, \"Recherche\" ?";
+"UnknowType"                = "Type Bluetooth Inconnu";
+"blueDisconnect"            = "Bluetooth est déconnecté";
+"SureDeleteFood"            = "Confirmer la suppression %@ ?";
+"Hour"                      = "h";
+"Minute"                    = "m";
+"Second"                    = "s";

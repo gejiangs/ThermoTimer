@@ -1,0 +1,187 @@
+//
+//  SingleDeviceCell.m
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/17.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import "SingleDeviceCell.h"
+#import "FoodModel.h"
+
+@interface SingleDeviceCell ()
+
+@property (weak, nonatomic) IBOutlet UIView *bgView;
+@property (weak, nonatomic) IBOutlet UILabel *tempLabel;
+@property (weak, nonatomic) IBOutlet UILabel *tempUnitLabel;
+@property (weak, nonatomic) IBOutlet UILabel *leftLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *iconView;
+@property (weak, nonatomic) IBOutlet UILabel *rightLabel;
+@property (weak, nonatomic) IBOutlet UILabel *tempLineLabel;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tempUnicLeftConstraint;
+
+@property (nonatomic, strong)   FoodModel *foodModel;
+
+@end
+
+@implementation SingleDeviceCell
+
+-(id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        NSArray *array = [[NSBundle mainBundle] loadNibNamed:@"SingleDeviceCell" owner:nil options:nil];
+        self = [array firstObject];
+        
+        [self initUI];
+    }
+    return self;
+}
+
+-(void)initUI
+{
+    [self setTextColorWithSelected:NO];
+    self.tempUnitLabel.text         = [SystemManager shareManager].tempUnit;
+    self.rightLabel.adjustsFontSizeToFitWidth = YES;
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+    
+    // Configure the view for the selected state
+}
+
+-(void)setTextColorWithSelected:(BOOL)selected
+{
+    UIColor *textColor              = selected ? [UIColor whiteColor] : APP_Red_Color;
+    
+    self.bgView.backgroundColor     = !selected ? [UIColor whiteColor] : APP_Red_Color;
+    self.tempLabel.textColor        = textColor;
+    self.tempUnitLabel.textColor    = textColor;
+    self.tempLineLabel.textColor    = textColor;
+    self.leftLabel.textColor        = textColor;
+    self.rightLabel.textColor       = textColor;
+    self.iconView.image             = [UIImage imageNamed:selected ? @"icon_trend_write" : @"icon_trend_red"];
+}
+
+-(void)setCellInfo:(FoodModel *)model rowIndex:(NSInteger)row
+{
+    self.foodModel = model;
+    self.tempUnitLabel.text = [SystemManager shareManager].tempUnit;
+    
+    if (row == 0) {
+        self.tempLineLabel.hidden = YES;
+        self.leftLabel.text = LanguageKey(@"TimeNoSetTitle");
+        self.iconView.image = [UIImage imageNamed:@"icon_temperature_red"];
+        self.rightLabel.text = LanguageKey(@"TempSettingTitle");
+        
+        //连接状态
+        if (model.deviceConnected) {
+            self.leftLabel.hidden = NO;
+            self.tempLabel.hidden = NO;
+            self.tempUnitLabel.hidden = NO;
+            //未设置温度
+            if (model.selectedIndex == -1) {
+                self.tempLabel.text = @"";
+                self.tempUnitLabel.text = @"";
+                self.leftLabel.text = LanguageKey(@"TimeNoSetTitle");
+            }else{
+                self.leftLabel.text = LanguageKey(@"GoalTemp");
+                self.tempLabel.text = [NSString stringWithFormat:@"%0.1f", model.selectedValue];
+            }
+        }else{
+            self.leftLabel.hidden = YES;
+            self.tempLabel.hidden = YES;
+            self.tempUnitLabel.hidden = YES;
+        }
+    }else if (row == 1){
+        self.tempUnicLeftConstraint.constant = 0;
+        self.iconView.image = [UIImage imageNamed:@"icon_trend_red"];
+        self.rightLabel.text = LanguageKey(@"CurveSet");
+        
+        //连接状态
+        if (model.deviceConnected) {
+            self.tempLabel.hidden = NO;
+            self.leftLabel.hidden = NO;
+            self.tempLineLabel.hidden = YES;
+            self.leftLabel.text = LanguageKey(@"CurrentTemp");
+            self.tempLabel.text = [NSString stringWithFormat:@"%0.1f", model.deviceTempValue];
+            if (model.deviceTempValue == 0.f) {
+                self.tempLabel.text = @"--";
+            }
+            //华摄氏度32度，就是摄氏度0度
+            else if ([self.tempUnitLabel.text isEqualToString:@"°F"] && model.deviceTempValue == 32.f){
+                self.tempLabel.text = @"--";
+            }
+        }else{
+            self.tempLabel.hidden = YES;
+            self.leftLabel.hidden = YES;
+            self.tempLabel.text = @"0";
+            self.tempLineLabel.hidden = NO;
+        }
+    }else if (row == 2){
+        self.tempLineLabel.hidden = YES;
+        self.tempUnicLeftConstraint.constant = -60;
+        self.iconView.image = [UIImage imageNamed:@"icon_timer_red"];
+        self.rightLabel.text = LanguageKey(@"TimeSet");
+        
+        //连接状态
+        if (model.deviceConnected) {
+            self.leftLabel.hidden = NO;
+            self.tempLabel.hidden = YES;
+            //未设置时间
+            if (model.countDownTime == -1) {
+                self.tempUnitLabel.hidden = YES;
+                self.leftLabel.text = LanguageKey(@"TimeNoSetTitle");
+            }else{
+                self.leftLabel.text = LanguageKey(@"CountTime");
+                self.tempUnitLabel.hidden = NO;
+                [self timeCountDown];
+            }
+        }else{
+            self.leftLabel.hidden = YES;
+            self.tempLabel.hidden = YES;
+            self.tempUnitLabel.hidden = YES;
+        }
+        
+    }
+}
+
+-(void)timeCountDown
+{
+    NSInteger currentInterval = [[[NSDate alloc] init] timeIntervalSince1970];
+    NSInteger countTime = self.foodModel.countDownTime - currentInterval;
+    
+    //倒计时已经结束了，不处理
+    if (self.foodModel.countDownTime > 0 && countTime < 0) {
+        self.tempUnitLabel.text = @"00:00:00";
+        return;
+    }
+    
+    //倒计时结束
+    if (self.foodModel.countDownTime > 0 && countTime == 0) {
+        
+        self.tempUnitLabel.text = @"00:00:00";
+        
+        if (self.TimeCountDownEnd) {
+            self.TimeCountDownEnd();
+        }
+        
+        return;
+    }
+    
+    //倒计时正在进行
+    NSTimeZone* GTMzone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    format.dateFormat = @"HH:mm:ss";
+    [format setTimeZone:GTMzone];
+    
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:countTime];
+    NSString *countTimeString = [format stringFromDate:date];
+    countTimeString = [NSString stringWithFormat:@"%@", countTimeString];
+    
+    self.tempUnitLabel.text = countTimeString;
+}
+
+
+@end

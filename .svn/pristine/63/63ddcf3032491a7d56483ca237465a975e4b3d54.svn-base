@@ -1,0 +1,189 @@
+//
+//  SettingViewController.m
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/10.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import "SettingViewController.h"
+#import "AlarmSettingViewController.h"
+#import "BluetoothManager.h"
+#import "BluetoothManager+Category.h"
+
+
+@interface SettingViewController ()
+
+@property (nonatomic, assign) NSInteger tempIndex;
+@property (nonatomic, strong)   NSArray *tempUnits;
+@property (nonatomic, strong)   NSArray *titles;
+
+@end
+
+@implementation SettingViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = LanguageKey(@"SettingTitle");
+    
+    [self setTableViewStyle:UITableViewStyleGrouped];
+    [self.tableView updateConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(54);
+    }];
+    
+    [self setMoreViewHidden:YES];
+    self.tableView.tableFooterView = [self getFooterView];
+    
+    self.tempUnits = @[@"°F", @"℃"];
+    
+    self.tempIndex = [self.tempUnits indexOfObject:[SystemManager shareManager].tempUnit];
+    
+    
+    self.titles = @[NSLocalizedString(@"SettingTempUnit", nil),
+                    NSLocalizedString(@"SettingTimerAlarm", nil),
+                    NSLocalizedString(@"SettingTempAlarm", nil)];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+}
+
+-(UIView *)getFooterView
+{
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 150)];
+    footerView.backgroundColor = [UIColor whiteColor];
+    
+    UIView *lineView = [[UIView alloc] init];
+    lineView.backgroundColor = RGB(200, 199, 204);
+    [footerView addSubview:lineView];
+    [lineView makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.offset(0);
+        make.top.offset(-0.5);
+        make.height.offset(0.5f);
+    }];
+    
+    
+    UIButton *startButton = [footerView addButtonWithTitle:NSLocalizedString(@"Save", nil) target:self action:@selector(saveAction:)];
+    startButton.backgroundColor = APP_Yellow_Color;
+    [startButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [startButton makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(Size(120, 40));
+        make.center.equalTo(footerView);
+    }];
+    
+    return footerView;
+}
+
+-(void)saveAction:(UIButton *)sender
+{
+    [SystemManager shareManager].tempUnit = [self.tempUnits objectAtIndex:self.tempIndex];
+    
+    //判断蓝牙是否连接
+    if ([BluetoothManager shareManager].peripheral != nil) {
+        //2头的硬件需要设置蓝牙温度类型
+//        if ([SystemManager shareManager].currentDeviceType == DeviceTypeTwo) {
+            if (self.tempIndex == 0) {
+                [[BluetoothManager shareManager] setTempTypeF];
+            }else if (self.tempIndex == 1){
+                [[BluetoothManager shareManager] setTempTypeC];
+            }
+//        }
+    }
+    
+    [self.view showToastText:NSLocalizedString(@"SaveSuccess", nil) duration:1.5f];
+    
+    [self dispatchTimerWithTime:1 block:^{
+        [self.navigationController popViewControllerAnimated:YES];
+    }];
+    
+}
+
+#pragma mark UITableView Delegate
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 3;
+}
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *ident = @"cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ident];
+    }
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    
+    cell.textLabel.text = [self.titles objectAtIndex:indexPath.row];
+    cell.textLabel.textColor = APP_Yellow_Color;
+    
+    if (indexPath.row == 0) {
+        UISegmentedControl *segment = [[UISegmentedControl alloc] initWithItems:self.tempUnits];
+        [segment addTarget:self action:@selector(segmentChange:) forControlEvents:UIControlEventValueChanged];
+        segment.frame = CGRectMake(0, 0, 80, 30);
+        segment.selectedSegmentIndex = self.tempIndex;
+        segment.tintColor = APP_Yellow_Color;
+        cell.accessoryView = segment;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    
+    return cell;
+}
+
+#pragma mark UISegment
+-(void)segmentChange:(UISegmentedControl *)sender
+{
+    self.tempIndex = sender.selectedSegmentIndex;
+}
+
+#pragma mark UITableView Delegate
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 60.f;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1f;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (indexPath.row < 1) {
+        return;
+    }
+    
+    AlarmSettingViewController *alarmSettingVC = [[AlarmSettingViewController alloc] init];
+    alarmSettingVC.alarmType = indexPath.row;
+    alarmSettingVC.title = [self.titles objectAtIndex:indexPath.row];
+    [self.navigationController pushViewController:alarmSettingVC animated:YES];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

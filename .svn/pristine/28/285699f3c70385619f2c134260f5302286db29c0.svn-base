@@ -1,0 +1,34 @@
+//
+//  FoodModel.h
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/12.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface FoodModel : NSObject<NSCoding>
+
+@property (nonatomic, assign)   BOOL deviceConnected;       //探针连接成功
+@property (nonatomic, assign)   NSInteger number;           //探针编号
+@property (nonatomic, copy)     NSString *name;             //标题名
+@property (nonatomic, copy)     NSString *iconName;         //图标名（白底）
+@property (nonatomic, copy)     NSString *iconNameRed;      //图标名2(红底)
+@property (nonatomic, assign)   NSInteger type;             //自定义值为-1，其它0～7
+@property (nonatomic, strong)   NSArray *tempTitles;        //标题数组
+@property (nonatomic, strong)   NSArray *tempValues;        //值数组
+@property (nonatomic, assign)   NSInteger customValue;      //自定义温度值(set方法)
+@property (nonatomic, assign)   NSInteger getCustomValue;   //自定义温度值(get方法)
+@property (nonatomic, assign)   NSInteger selectedIndex;    //选择索引
+@property (nonatomic, copy)     NSString *selectedTitle;    //选中的标题
+@property (nonatomic, assign)   NSInteger selectedValue;    //选中的温度
+@property (nonatomic, assign)   CGFloat deviceTempValue;    //设备的温度（探头的温度）
+@property (nonatomic, assign)   NSInteger countDownTime;    //定时时间（当前时间秒+设置时间秒）(当前时间和该值比较，相等则时间结束)
+@property (nonatomic, assign)   NSInteger tag;              //记录食物标签（系统默认：0，自定义：1～4）
+
+@property (nonatomic, strong)   NSMutableArray *tempArray1;     //探头1温度记录
+@property (nonatomic, strong)   NSMutableArray *tempArray2;     //探头2温度记录
+@property (nonatomic, strong)   NSMutableArray *tempArray3;     //探头3温度记录
+@property (nonatomic, strong)   NSMutableArray *tempArray4;     //探头4温度记录
+@end

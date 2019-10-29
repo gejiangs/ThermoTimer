@@ -1,0 +1,250 @@
+//
+//  TimerViewController.m
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/10.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import "TimerViewController.h"
+#import "FoodModel.h"
+#import "MultipleDeviceViewController.h"
+#import "SingleDeviceViewController.h"
+#import "TempCurveViewController.h"
+#import "FoodChoiceViewController.h"
+#import "DataManager.h"
+
+@interface TimerViewController ()<UIPickerViewDataSource,UIPickerViewDelegate>
+
+@property (weak, nonatomic) IBOutlet UIPickerView *pickerView;
+@property (weak, nonatomic) IBOutlet UIView *handlerView;
+@property (weak, nonatomic) IBOutlet UIView *footerView;
+
+@property (nonatomic, assign)   NSInteger hourIndex;
+@property (nonatomic, assign)   NSInteger minIndex;
+@property (nonatomic, assign)   NSInteger secondIndex;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *handlerTopConstraint;
+@end
+
+@implementation TimerViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = [self languageKey:@"TimerTitle"];
+    
+    [self setMoreViewHidden:YES];
+    [self initUI];
+    [self addFooterButton];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+}
+
+-(void)initUI
+{
+    if ([DeviceVersion intValue] == 7) {
+        self.handlerTopConstraint.constant = 50.f;
+    }
+    self.handlerView.userInteractionEnabled = NO;
+    self.pickerView.backgroundColor = RGB(211, 211, 211);
+    
+    UIView *leftView = [UIView new];
+    leftView.backgroundColor = APP_Yellow_Color;
+    [self.handlerView addSubview:leftView];
+    [leftView makeConstraints:^(MASConstraintMaker *make) {
+        make.left.offset(10);
+        make.size.mas_equalTo(Size(5, 30));
+        make.centerY.equalTo(self.handlerView);
+    }];
+    
+    CGFloat width = ScreenWidth/3.f;
+    UILabel *hourLabel = [self.handlerView addLabelWithText:[self languageKey:@"Hour"] font:[UIFont systemFontOfSize:14] color:APP_Yellow_Color];
+    hourLabel.textAlignment = NSTextAlignmentCenter;
+    hourLabel.userInteractionEnabled = NO;
+    [hourLabel makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(self.handlerView);
+        make.left.offset(20);
+        make.width.offset(width);
+    }];
+    
+    UILabel *minLabel = [self.handlerView addLabelWithText:[self languageKey:@"Minute"] font:[UIFont systemFontOfSize:14] color:APP_Yellow_Color];
+    minLabel.textAlignment = NSTextAlignmentCenter;
+    minLabel.userInteractionEnabled = NO;
+    [minLabel makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(self.handlerView);
+        make.left.equalTo(hourLabel.right).offset(0);
+        make.width.offset(width);
+    }];
+    
+    UILabel *secondLabel = [self.handlerView addLabelWithText:[self languageKey:@"Second"] font:[UIFont systemFontOfSize:14] color:APP_Yellow_Color];
+    secondLabel.textAlignment = NSTextAlignmentCenter;
+    secondLabel.userInteractionEnabled = NO;
+    [secondLabel makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(self.handlerView);
+        make.left.equalTo(minLabel.right).offset(3);
+        make.width.offset(width);
+    }];
+    
+}
+
+-(void)addFooterButton
+{
+    self.footerView.backgroundColor = RGB(235, 235, 235);
+    self.footerView.layer.borderColor = [UIColor grayColor].CGColor;
+    self.footerView.layer.borderWidth = 1.f;
+    
+    UIButton *leftButton = [self.footerView addButtonWithTitle:NSLocalizedString(@"Start", nil) target:self action:@selector(leftAction:)];
+    leftButton.backgroundColor = APP_Yellow_Color;
+    [leftButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [leftButton makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(Size(120, 40));
+        make.centerY.equalTo(self.footerView);
+    }];
+    
+    UIButton *rightButton = [self.footerView addButtonWithTitle:NSLocalizedString(@"Reset", nil) target:self action:@selector(rightAction:)];
+    rightButton.backgroundColor = [UIColor grayColor];
+    [rightButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [rightButton makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(Size(120, 40));
+        make.centerY.equalTo(self.footerView);
+    }];
+    
+    [self.footerView distributeSpacingHorizontallyWith:@[leftButton, rightButton]];
+}
+
+#pragma mark Button Action
+-(void)leftAction:(UIButton *)sender
+{
+    NSInteger cutHour = self.hourIndex * 60 * 60;
+    NSInteger cutMin = self.minIndex * 60;
+    NSInteger cutSec = self.secondIndex;
+    
+    if (cutHour < 1 && cutMin < 1 && cutSec < 1) {
+        [self.view showToastText:[self languageKey:@"TimerSetError"]];
+        return;
+    }
+    
+    NSInteger currentTime = [[[NSDate alloc] init] timeIntervalSince1970];
+    NSInteger countDownTime = currentTime + cutHour + cutMin + cutSec;
+    
+    if (self.foodModel != nil) {
+        self.foodModel.countDownTime = countDownTime;
+        if ([SystemManager shareManager].currentDeviceType == DeviceTypeOne) {
+            [[DataManager shareManager] saveSingleFoodmodel:self.foodModel];
+        }else{
+            [[DataManager shareManager] saveMultipleFoodmodel:self.foodModel];
+        }
+        [self.navigationController popViewControllerAnimated:YES];
+        return;
+    }
+    
+    //单口、4口、温度三种情况才设置时间
+    NSArray *vcs = [self.navigationController viewControllers];
+    UIViewController *vc = [vcs objectAtIndex:[vcs count] - 2];
+    if ([vc isKindOfClass:[TempCurveViewController class]]){
+        ((TempCurveViewController *)vc).foodModel.countDownTime = countDownTime;
+    }else if([vcs count] > 3)
+    {
+        vc = [vcs objectAtIndex:2];
+        if ([vc isKindOfClass:[SingleDeviceViewController class]]) {
+            [(SingleDeviceViewController *)vc setCountdownTime:countDownTime];
+        }else if ([vc isKindOfClass:[MultipleDeviceViewController class]]){
+            [(MultipleDeviceViewController *)vc setCountdownTime:countDownTime];
+        }
+    }
+    [self.navigationController popToViewController:vc animated:YES];
+}
+
+-(void)rightAction:(UIButton *)sender
+{
+    self.hourIndex = 0;
+    self.minIndex = 0;
+    self.secondIndex =0;
+    
+    [self.pickerView selectRow:self.hourIndex inComponent:0 animated:YES];
+    [self.pickerView selectRow:self.minIndex inComponent:1 animated:YES];
+    [self.pickerView selectRow:self.secondIndex inComponent:2 animated:YES];
+}
+
+#pragma mark UIPickerView Delegate
+-(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
+{
+    return 3;
+}
+
+-(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+{
+    if (component == 0) {
+        return 24;
+    }
+    return 60;
+}
+
+-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+{
+    return [NSString stringWithFormat:@"%d", (int)row];
+}
+
+-(UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view
+{
+    UILabel* pickerLabel = (UILabel*)view;
+    if (!pickerLabel){
+        pickerLabel = [[UILabel alloc] init];
+        [pickerLabel setTextAlignment:NSTextAlignmentCenter];
+        [pickerLabel setBackgroundColor:[UIColor clearColor]];
+        [pickerLabel setFont:[UIFont boldSystemFontOfSize:20]];
+    }
+    
+    pickerLabel.text = [NSString stringWithFormat:@"%@%d", row < 10 ? @"0" : @"", (int)row];
+    
+    pickerLabel.textColor = [UIColor blackColor];
+    
+    if ((component == 0 && row == self.hourIndex) ||
+        (component == 1 && row == self.minIndex) ||
+        (component == 2 && row == self.secondIndex)) {
+        pickerLabel.textColor = APP_Yellow_Color;
+        [pickerLabel setFont:[UIFont boldSystemFontOfSize:25]];
+    }
+    
+    return pickerLabel;
+}
+
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
+{
+    if (component == 0) {
+        self.hourIndex = row;
+    }else if (component == 1){
+        self.minIndex = row;
+    }else if (component == 2){
+        self.secondIndex = row;
+    }
+    [self.pickerView reloadAllComponents];
+}
+
+- (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component
+{
+    return 30;
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

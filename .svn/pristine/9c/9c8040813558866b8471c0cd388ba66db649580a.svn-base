@@ -1,0 +1,533 @@
+//
+//  TempCurveViewController.m
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/10.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import "TempCurveViewController.h"
+#import "TimerViewController.h"
+#import "FoodChoiceViewController.h"
+#import "FoodModel.h"
+#import "FYChartView.h"
+#import "BluetoothManager.h"
+#import "BluetoothManager+Category.h"
+#import "TempRecordModel.h"
+#import "DeviceStatuView.h"
+#import "NormalTempView.h"
+#import "TKAlertView.h"
+#import "MultipleDeviceViewController.h"
+#import "SingleDeviceViewController.h"
+
+
+@interface TempCurveViewController ()<FYChartViewDataSource,FYChartViewDelegate>
+
+@property (weak, nonatomic) IBOutlet UIButton *backButton;
+@property (strong, nonatomic)  UIView *dataView;
+@property (strong, nonatomic)  UILabel *numberLabel;
+@property (strong, nonatomic)  UILabel *tipLabel;
+@property (strong, nonatomic)  UILabel *tempValueLabel;
+@property (strong, nonatomic)  UIButton *timerButton;
+@property (strong, nonatomic)  UIImageView *settingImage;
+@property (strong, nonatomic)  UIButton *settingButton;
+@property (strong, nonatomic)  FYChartView *lineChartView;
+@property (assign, nonatomic)   NSInteger lineValue;
+
+@property (nonatomic, strong)   NSArray *tempArray;
+
+@property (nonatomic, strong)   NSTimer *dataTimer;
+@property (nonatomic, strong)   NSTimer *countTimer;
+
+@property (nonatomic, strong)   DeviceStatuView *deviceInfoView;
+@property (nonatomic, strong)   NormalTempView *tempView;
+
+@end
+
+@implementation TempCurveViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self initUI];
+    [self initValue];
+    [self showDeviceInfoView];
+    [self refreshUIData];
+    
+    [self showDeviceInfoView];
+    
+    if ([SystemManager shareManager].currentDeviceType == 1)
+    {
+        [self showTempView];
+        
+        self.tipLabel.hidden = YES;
+        self.numberLabel.hidden = YES;
+    }
+    
+    self.tempArray = [[SystemManager shareManager] getTempArrayWithNumber:self.foodModel.number];
+    
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    
+    [self initValue];
+    
+    if (self.countTimer != nil) {
+        [self.countTimer invalidate];
+        self.countTimer = nil;
+    }
+    
+    [self resetTimerButton];
+    
+    [[BluetoothManager shareManager] singleDeviceTempUpdate:^(CGFloat temp) {
+        self.foodModel.deviceTempValue = temp;
+        
+        TempRecordModel *record = [[TempRecordModel alloc] init];
+        record.temp = temp;
+        record.date= [NSDate date];
+        [self.foodModel.tempArray1 addObject:record];
+        
+        [self initValue];
+        
+        [self.lineChartView reloadData];
+    }];
+    
+    if ([SystemManager shareManager].currentDeviceType == 1)
+    {
+        [self.tempView updateNormalTemp];
+    }
+    
+    [self.deviceInfoView updateDeviceSingal];
+}
+
+-(void)showDeviceInfoView
+{
+    if (self.deviceInfoView != nil) {
+        return;
+    }
+    self.deviceInfoView = [[DeviceStatuView alloc] init];
+    [self.view addSubview:_deviceInfoView];
+    
+    [_deviceInfoView makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(Size(30, 45));
+        make.top.offset(70);
+        make.right.offset(-10);
+    }];
+}
+
+
+-(void)showTempView
+{
+    if (self.tempView != nil) {
+        return;
+    }
+    
+    self.tempView = [[NormalTempView alloc] init];
+    [self.view addSubview:_tempView];
+    
+    [_tempView makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(Size(50, 45));
+        make.top.offset(70);
+        make.left.offset(10);
+    }];
+}
+
+
+-(void)resetTimerButton
+{
+    if (self.foodModel.countDownTime > 0) {
+        [self.timerButton setImage:nil forState:UIControlStateNormal];
+        [self timeCountDown];
+    }else{
+        
+        if (self.countTimer != nil) {
+            [self.countTimer invalidate];
+            self.countTimer = nil;
+        }
+        
+        [self.timerButton setImage:[UIImage imageNamed:@"icon_timer_red2"] forState:UIControlStateNormal];
+        [self.timerButton setTitle:NSLocalizedString(@"CountTimeTitle", nil) forState:UIControlStateNormal];
+    }
+}
+
+- (IBAction)backClicked:(UIButton *)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+
+-(void)initUI
+{
+    [self.view bringSubviewToFront:self.backButton];
+    self.tableView.backgroundColor = [UIColor whiteColor];
+    [self.tableView updateConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(130);
+    }];
+    
+    self.tableView.tableHeaderView = [self tableHeaderView];
+    self.tableView.tableFooterView = [self tableFooterView];
+    
+    self.topImageView.hidden = NO;
+    
+}
+
+-(UIView *)tableHeaderView
+{
+    UIView *headerView = [[UIView alloc] initWithFrame:Rect(0, 0, self.tableView.frame.size.width, 140)];
+    
+    self.numberLabel = [headerView addLabelWithText:@"" font:[UIFont systemFontOfSize:27]];
+    _numberLabel.frame = Rect(0, 0, 40, 40);
+    [_numberLabel makeConstraints:^(MASConstraintMaker *make) {
+        make.left.offset(10);
+        make.top.offset(10);
+        make.size.mas_equalTo(Size(40, 40));
+    }];
+    _numberLabel.textColor = APP_Red_Color;
+    _numberLabel.textAlignment = NSTextAlignmentCenter;
+    _numberLabel.layer.cornerRadius = 20.f;
+    _numberLabel.layer.borderColor = APP_Red_Color.CGColor;
+    _numberLabel.layer.borderWidth = 2.f;
+    _numberLabel.layer.masksToBounds = YES;
+    
+    self.tipLabel = [headerView addLabelWithText:NSLocalizedString(@"DeviceNeedle", nil) font:[UIFont systemFontOfSize:14] color:APP_Red_Color];
+    [_tipLabel makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(_numberLabel);
+        make.top.equalTo(_numberLabel.bottom).offset(5);
+    }];
+    
+    self.tempValueLabel = [headerView addLabelWithText:@"" font:[UIFont systemFontOfSize:73] color:APP_Red_Color];
+    _tempValueLabel.adjustsFontSizeToFitWidth = YES;
+    _tempValueLabel.textAlignment = NSTextAlignmentRight;
+    [_tempValueLabel makeConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(0);
+        make.right.offset(-10);
+        make.left.offset(60);
+    }];
+    
+    
+    self.settingButton = [headerView addButtonWithTitle:NSLocalizedString(@"TempSettingTitle", nil) target:self action:@selector(tempClicked:)];
+    [_settingButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
+    [_settingButton setTitleColor:APP_Red_Color forState:UIControlStateNormal];
+    [_settingButton makeConstraints:^(MASConstraintMaker *make) {
+        make.right.offset(-20);
+        make.top.offset(80);
+        make.height.offset(24);
+    }];
+    
+    self.settingImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_temperature_red"]];
+    [headerView addSubview:_settingImage];
+    [_settingImage makeConstraints:^(MASConstraintMaker *make) {
+        make.height.width.offset(24);
+        make.right.equalTo(_settingButton.left).offset(0);
+        make.top.offset(80);
+    }];
+    
+    
+    self.timerButton = [headerView addButtonWithTitle:NSLocalizedString(@"CountTimeTitle", nil) target:self action:@selector(timerClicked:)];
+    [_timerButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
+    [_timerButton setImage:[UIImage imageNamed:@"icon_timer_red"] forState:UIControlStateNormal];
+    [_timerButton setTitleColor:APP_Red_Color forState:UIControlStateNormal];
+    [_timerButton makeConstraints:^(MASConstraintMaker *make) {
+        make.top.offset(80);
+        make.right.equalTo(_settingImage.left).offset(-15);
+        make.height.offset(24);
+    }];
+    
+    
+    return headerView;
+}
+
+-(UIView *)tableFooterView
+{
+    UIView *footerView = [[UIView alloc] initWithFrame:Rect(0, 0, self.tableView.frame.size.width, 200)];
+    
+    self.lineChartView = [[FYChartView alloc] init];
+    _lineChartView.backgroundColor = [UIColor clearColor];
+    _lineChartView.dataSource = self;
+    [footerView addSubview:_lineChartView];
+    [_lineChartView makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.top.offset(0);
+        make.left.offset(5);
+        make.right.offset(-5);
+    }];
+    
+    return footerView;
+}
+
+-(void)initValue
+{
+    NSString *unit = [SystemManager shareManager].tempUnit;
+    
+    self.numberLabel.text = [NSString stringWithFormat:@"%d", (int)self.foodModel.number];
+    self.tempValueLabel.text = [NSString stringWithFormat:@"%0.1f%@", self.foodModel.deviceTempValue, unit];
+    [self.tempValueLabel addAttributesText:unit font:[UIFont systemFontOfSize:45]];
+    if (self.foodModel.deviceTempValue == 0.f) {
+        self.tempValueLabel.text = @"--";
+    }
+    
+    if (self.foodModel.name != nil && [self.foodModel.name length] > 0) {
+        self.settingImage.image = [UIImage imageNamed:self.foodModel.iconNameRed];
+        [self.settingButton setTitle:[NSString stringWithFormat:@"%0.1f%@", self.foodModel.selectedValue, unit] forState:UIControlStateNormal];
+    }else{
+        self.settingImage.image = [UIImage imageNamed:@"icon_temperature_red"];
+        [self.settingButton  setTitle:NSLocalizedString(@"TempSettingTitle", nil) forState:UIControlStateNormal];
+    }
+}
+
+-(void)refreshUIData
+{
+    NSString *unit = [SystemManager shareManager].tempUnit;
+    self.tempValueLabel.text = [NSString stringWithFormat:@"%0.1f%@", self.foodModel.deviceTempValue, unit];
+    [self.tempValueLabel addAttributesText:unit font:[UIFont systemFontOfSize:45]];
+    if (self.foodModel.deviceTempValue == 0.f) {
+        self.tempValueLabel.text = @"--";
+    }
+    
+    self.dataTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(refreshUIData) userInfo:nil repeats:NO];
+    
+    [self.lineChartView reloadData];
+    
+    //查检温度警报
+//    CGFloat v = self.foodModel.selectedValue;
+//    if (self.foodModel.selectedIndex == -1) {
+//        v = self.foodModel.gCustomValue;
+//    }
+//    
+//    if (v >= 0 && self.foodModel.deviceTempValue >= v) {
+//        [self showTempAlertView];
+//    }
+}
+
+////提示温度警报
+//-(void)showTempAlertView
+//{
+//    //读取探头编号，是否需要显示温度警报框
+//    if (![[SystemManager shareManager] getNeedTempAlertIndex:self.foodModel.number]) {
+//        return;
+//    }
+//    
+//    //设置温度警报框不再显示
+//    [[SystemManager shareManager] hideTempAlertWithIndex:self.foodModel.number];
+//    
+//    [[BluetoothManager shareManager] deblocking];
+//    
+//    TKAlertView *alert = [[TKAlertView alloc] initWithTitle:[self languageKey:@"TempAlarm"]
+//                                                buttonTitle:[self languageKey:@"Fine"]
+//                                                 sureAction:^{
+//                                                     [[BluetoothManager shareManager] blocking];
+//                                                     [[SystemManager shareManager] pauseMusic];
+//                                                     
+//                                                     //点击确定后30秒，再设置需要显示温度警报框
+//                                                     [[SystemManager shareManager] showTempAlertTimerWithIndex:self.foodModel.number];
+//                                                 }];
+//    [alert show];
+//    
+//    [[SystemManager shareManager] playTempAlarm];
+//    
+//    [[SystemManager shareManager] sendLocalNotificationTemp];
+//    
+//}
+
+-(void)timeCountDown
+{
+    NSInteger currentInterval = [[[NSDate alloc] init] timeIntervalSince1970];
+    NSInteger countTime = self.foodModel.countDownTime - currentInterval;
+    
+    if (self.foodModel.countDownTime > 0 && countTime <= 0) {
+        
+//        if (self.countTimer != nil) {
+//            
+//            TKAlertView *alert = [[TKAlertView alloc] initWithTitle:[self languageKey:@"CountTimeEnd"]
+//                                                        buttonTitle:[self languageKey:@"Fine"]
+//                                                         sureAction:^{
+//                                                             [[SystemManager shareManager] pauseMusic];
+//                                                         }];
+//            [alert show];
+//            
+//            [[SystemManager shareManager] sendLocalNotificationTime];
+//            [[SystemManager shareManager] playTimeAlarm];
+//            
+//            [self.countTimer invalidate];
+//            self.countTimer = nil;
+//        }
+        [self.countTimer invalidate];
+        self.countTimer = nil;
+        
+        [self.timerButton setTitle:@" 00:00:00 " forState:UIControlStateNormal];
+        
+        return;
+    }
+
+    
+    NSTimeZone* GTMzone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    format.dateFormat = @"HH:mm:ss";
+    [format setTimeZone:GTMzone];
+    
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:countTime];
+    NSString *countTimeString = [format stringFromDate:date];
+    countTimeString = [NSString stringWithFormat:@"  %@  ", countTimeString];
+    
+    [self.timerButton setTitle:countTimeString forState:UIControlStateNormal];
+    
+    self.countTimer = [NSTimer scheduledTimerWithTimeInterval:1
+                                                       target:self
+                                                     selector:@selector(timeCountDown)
+                                                     userInfo:nil
+                                                      repeats:NO];
+}
+
+-(void)setNumberSelected:(BOOL)selected
+{
+    if (selected) {
+        self.numberLabel.backgroundColor = APP_Red_Color;
+        self.numberLabel.textColor = [UIColor whiteColor];
+    }else{
+        self.numberLabel.backgroundColor = [UIColor whiteColor];
+        self.numberLabel.textColor = APP_Red_Color;
+    }
+}
+
+#pragma mark FYChartView DataSource
+//number of value count
+- (NSInteger)numberOfValueItemCountInChartView:(FYChartView *)chartView;
+{
+    return [self.tempArray count];
+}
+
+//value at index
+- (float)chartView:(FYChartView *)chartView valueAtIndex:(NSInteger)index
+{
+    TempRecordModel *record = [self.tempArray objectAtIndex:index];
+    return record.temp;
+}
+
+-(NSInteger)numberOfHorizontalItemCountInChartView:(FYChartView *)chartView
+{
+    return 6;
+}
+
+//horizontal title at index
+- (NSString *)chartView:(FYChartView *)chartView horizontalTitleAtIndex:(NSInteger)index
+{
+    NSMutableArray *dateTitles = [NSMutableArray array];
+    CGFloat group_num = 60;
+    if (self.tempArray.count > 300) {
+        group_num = self.tempArray.count/5;
+    }
+    NSInteger count = self.tempArray.count / group_num;
+    for (int i=0; i<=count; i++) {
+        NSInteger index = i * group_num - 1;
+        index = MAX(0, index);
+        TempRecordModel *record = [self.tempArray objectAtIndex:index];
+        [dateTitles addObject:record.date];
+    }
+    NSDate *lastDate = [dateTitles lastObject];
+    for (int i=0; i<6-count; i++) {
+        NSDate *newDate = [lastDate dateByAddingTimeInterval:60*(i+1)];    //增加1分钟
+        [dateTitles addObject:newDate];
+    }
+    
+    NSMutableArray *stringTitles = [NSMutableArray array];
+    for (NSDate *date in dateTitles) {
+        
+        NSDateFormatter *dataFormatter = [[NSDateFormatter alloc] init];
+        [dataFormatter setDateFormat:@"HH:mm"];
+        
+        [stringTitles addObject:[dataFormatter stringFromDate:date]];
+        
+    }
+    
+    return [stringTitles objectAtIndex:index];
+    
+}
+
+
+#pragma mark FYChartView Datagelate
+- (UIView *)chartView:(FYChartView *)chartView descriptionViewAtIndex:(NSInteger)index
+{
+    TempRecordModel *record = [self.tempArray objectAtIndex:index];
+    
+    NSDateFormatter *dataFormatter = [[NSDateFormatter alloc] init];
+    [dataFormatter setDateFormat:@"HH:mm:ss"];
+    NSString *time = [dataFormatter stringFromDate:record.date];
+    
+    NSString *unit = [SystemManager shareManager].tempUnit;
+    CGFloat v = [[SystemManager shareManager] tempConvertFahrenheit:record.temp];
+    
+    NSString *description = [NSString stringWithFormat:@"%@:%@\n%@:%g%@", [self languageKey:@"time"], time, [self languageKey:@"Temperature"], v, unit];
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chart_ description_bg"]];
+    CGRect frame = imageView.frame;
+    frame.size = CGSizeMake(80.0f, 40.0f);
+    imageView.frame = frame;
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(.0f, .0f, imageView.frame.size.width, imageView.frame.size.height)];
+    label.text = description;
+    label.numberOfLines = 0;
+    label.font = [UIFont systemFontOfSize:10.0f];
+    [imageView addSubview:label];
+    
+    return imageView;
+}
+
+- (IBAction)timerClicked:(UIButton *)sender
+{
+    TimerViewController *timerVC = [[TimerViewController alloc] init];
+    timerVC.foodModel = self.foodModel;
+    [self.navigationController pushViewController:timerVC animated:YES];
+}
+
+- (IBAction)tempClicked:(UIButton *)sender
+{
+    FoodChoiceViewController *goodVC = [[FoodChoiceViewController alloc] init];
+    [self.navigationController pushViewController:goodVC animated:YES];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    if (self.countTimer != nil) {
+        [self.countTimer invalidate];
+        self.countTimer = nil;
+    }
+    
+    if (self.dataTimer != nil) {
+        [self.dataTimer invalidate];
+        self.dataTimer = nil;
+    }
+}
+
+-(void)dealloc
+{
+    if (self.countTimer != nil) {
+        [self.countTimer invalidate];
+        self.countTimer = nil;
+    }
+    
+    if (self.dataTimer != nil) {
+        [self.dataTimer invalidate];
+        self.dataTimer = nil;
+    }
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

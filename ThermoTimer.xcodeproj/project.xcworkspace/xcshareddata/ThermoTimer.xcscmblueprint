@@ -1,0 +1,25 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "d6da2906-b76d-4016-bf36-d3172097a6a0++527",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "d6da2906-b76d-4016-bf36-d3172097a6a0++527" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "d6da2906-b76d-4016-bf36-d3172097a6a0++527" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "1D32517F-7933-410A-8B60-C6F737FAF15B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "d6da2906-b76d-4016-bf36-d3172097a6a0++527" : "%E5%B7%A5%E7%A8%8B%EF%BC%88%E7%83%A7%E7%83%A4%E5%8F%89%EF%BC%89\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "ThermoTimer",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "04源代码\/IOS\/ThermoTimer\/ThermoTimer.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "svn:\/\/192.168.1.234",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "d6da2906-b76d-4016-bf36-d3172097a6a0++527"
+    }
+  ]
+}

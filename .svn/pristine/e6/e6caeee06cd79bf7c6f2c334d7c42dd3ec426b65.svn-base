@@ -1,0 +1,15 @@
+//
+//  ProductViewController.h
+//  ThermoTimer
+//
+//  Created by gejiangs on 16/1/8.
+//  Copyright © 2016年 gejiangs. All rights reserved.
+//
+
+#import "BaseViewController.h"
+
+@interface ProductViewController : BaseViewController
+
+@property (nonatomic, assign)   DeviceType deviceType;
+
+@end

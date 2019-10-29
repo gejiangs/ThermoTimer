@@ -1,0 +1,178 @@
+//
+//  MultipleDeviceCell.m
+//  ThermoTimer
+//
+//  Created by gejiangs on 15/8/12.
+//  Copyright (c) 2015年 gejiangs. All rights reserved.
+//
+
+#import "MultipleDeviceCell.h"
+#import "FoodModel.h"
+
+@interface MultipleDeviceCell ()
+
+@property (weak, nonatomic) IBOutlet UILabel *numberLabel;
+@property (weak, nonatomic) IBOutlet UILabel *tipLabel;
+@property (weak, nonatomic) IBOutlet UILabel *tempValueLabel;
+@property (weak, nonatomic) IBOutlet UILabel *tempTitleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *lineLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *foodImageView;
+@property (weak, nonatomic) IBOutlet UILabel *foodTitleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *timeLabel;
+
+@property (nonatomic, strong)   FoodModel *foodModel;
+@property (nonatomic, strong)   NSTimer *numberTimer;
+
+
+@end
+
+@implementation MultipleDeviceCell
+
+-(id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        NSArray *array = [[NSBundle mainBundle] loadNibNamed:@"MultipleDeviceCell" owner:nil options:nil];
+        self = [array firstObject];
+        
+        [self initUI];
+    }
+    return self;
+}
+
+-(void)initUI
+{
+    self.tipLabel.textColor         = APP_Red_Color;
+    self.tempValueLabel.textColor   = APP_Red_Color;
+    self.lineLabel.textColor        = APP_Red_Color;
+    self.foodTitleLabel.textColor   = APP_Red_Color;
+    self.timeLabel.textColor        = APP_Red_Color;
+    self.tempTitleLabel.textColor   = APP_Red_Color;
+    
+    self.numberLabel.layer.cornerRadius = self.numberLabel.frame.size.width/2.f;
+    self.numberLabel.layer.borderColor = APP_Red_Color.CGColor;
+    self.numberLabel.layer.borderWidth = 2.f;
+    self.numberLabel.layer.masksToBounds = YES;
+    
+    self.tipLabel.text = [self languageKey:@"DeviceNeedle"];
+    
+    [self setNumberSelected:NO];
+}
+
+-(void)setNumberSelected:(BOOL)selected
+{
+    if (selected) {
+        self.numberLabel.backgroundColor = APP_Red_Color;
+        self.numberLabel.textColor = [UIColor whiteColor];
+    }else{
+        self.numberLabel.backgroundColor = [UIColor whiteColor];
+        self.numberLabel.textColor = APP_Red_Color;
+    }
+}
+
+-(void)setCellInfo:(FoodModel *)model
+{
+    self.foodModel = model;
+    
+    self.numberLabel.text = [NSString stringWithFormat:@"%d", (int)model.number];
+    if (model.name == nil) {
+        self.tempValueLabel.hidden = YES;
+        self.lineLabel.hidden = NO;
+        self.foodImageView.hidden = YES;
+        self.foodTitleLabel.hidden = YES;
+        self.lineLabel.text = @"——";
+    }else{
+        self.tempValueLabel.hidden = NO;
+        self.lineLabel.hidden = YES;
+        self.foodImageView.hidden = NO;
+        self.foodTitleLabel.hidden = NO;
+        
+        NSString *unit = [SystemManager shareManager].tempUnit;
+        self.tempValueLabel.text = [NSString stringWithFormat:@"%0.1f%@", model.deviceTempValue, unit];
+        if (model.deviceTempValue == 0.f) {
+            self.tempValueLabel.text = @"--";
+        }
+        //华摄氏度32度，就是摄氏度0度
+        else if ([unit isEqualToString:@"°F"] && model.deviceTempValue == 32.f){
+            self.tempValueLabel.text = @"--";
+        }
+        [self.tempValueLabel addAttributesText:unit font:[UIFont systemFontOfSize:28]];
+        
+        if (model.selectedIndex >= 0) {
+            self.lineLabel.text = [model.tempTitles objectAtIndex:model.selectedIndex];
+            self.foodImageView.image = [UIImage imageNamed:model.iconNameRed];
+        }else{
+            self.foodImageView.hidden = YES;
+        }
+        self.tempTitleLabel.text = LanguageKey(@"CurrentTemp")
+        self.foodTitleLabel.text = model.name;
+    }
+    
+    if (!StringNotEmpty(model.name) && model.countDownTime == -1) {
+        self.timeLabel.text = [self languageKey:@"TimeNoSetTitle"];
+        self.timeLabel.hidden = NO;
+        self.timeLabel.textColor = [UIColor grayColor];
+    }else if(StringNotEmpty(model.name) && model.countDownTime == -1){
+        self.timeLabel.text = [self languageKey:@"TimeNoSetTitle"];
+        self.timeLabel.hidden = YES;
+    }else if (model.countDownTime != -1){
+        self.timeLabel.hidden = NO;
+        self.timeLabel.textColor = APP_Red_Color;
+        [self setTimeCountDown];
+    }
+}
+
+-(void)setTimeCountDown
+{
+    NSInteger currentInterval = [[[NSDate alloc] init] timeIntervalSince1970];
+    NSInteger countTime = self.foodModel.countDownTime - currentInterval;
+    
+    if (self.foodModel.countDownTime > 0 && countTime <= 0) {
+        self.timeLabel.text = @"00:00:00";
+        return;
+    }
+    
+    NSTimeZone* GTMzone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    format.dateFormat = @"HH:mm:ss";
+    [format setTimeZone:GTMzone];
+    
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:countTime];
+    NSString *countTimeString = [format stringFromDate:date];
+    countTimeString = [NSString stringWithFormat:@"%@", countTimeString];
+    
+    self.timeLabel.text = countTimeString;
+}
+
+-(void)setNumberTwinkleWithState:(BOOL)state
+{
+    if (state == YES) {
+        if (self.numberTimer != nil) {
+            [self.numberTimer invalidate];
+            self.numberTimer = nil;
+        }
+        self.numberTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(changeNumberState) userInfo:nil repeats:YES];
+    }else{
+        if (self.numberTimer != nil) {
+            [self.numberTimer invalidate];
+            self.numberTimer = nil;
+        }
+        [self setNumberSelected:NO];
+    }
+}
+
+-(void)changeNumberState
+{
+    if (self.numberLabel.textColor == [UIColor whiteColor]) {
+        [self setNumberSelected:NO];
+    }else{
+        [self setNumberSelected:YES];
+    }
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+@end
