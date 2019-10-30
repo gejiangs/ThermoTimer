@@ -10,7 +10,7 @@
 #define Eventor_AppServerMacro_h
 
 
-#define UmengAppkey @"53290df956240b6b4a0084b3"
+#define UmengAppkey @"56984e88e0f55a6437000eb6"
 
 #define CustomFoodModel     @"CustomFoodModels"
 

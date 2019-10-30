@@ -155,7 +155,6 @@
 		AD980A821B81B4640008110E /* SingleDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AD980A801B81B4640008110E /* SingleDeviceCell.xib */; };
 		ADB0CAA71BE8844F00CC51EA /* FYChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = ADB0CAA61BE8844F00CC51EA /* FYChartView.m */; };
 		ADB0CAAA1BE88FE600CC51EA /* TempRecordModel.m in Sources */ = {isa = PBXBuildFile; fileRef = ADB0CAA91BE88FE600CC51EA /* TempRecordModel.m */; };
-		ADB39B291C4886DB00A5423C /* libMobClickLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADB39B261C4886DB00A5423C /* libMobClickLibrary.a */; };
 		ADB39B2B1C4887E800A5423C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = ADB39B2A1C4887E800A5423C /* libz.tbd */; };
 		ADB39B2E1C48938700A5423C /* LogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ADB39B2D1C48938700A5423C /* LogViewController.m */; };
 		ADC8B9B01C7FF1F5009FDD61 /* 无声.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = ADC8B9AF1C7FF1F5009FDD61 /* 无声.mp3 */; };
@@ -164,10 +163,13 @@
 		ADD7440F1DD45AF30077BC99 /* Readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = ADD7440E1DD45AF30077BC99 /* Readme.txt */; };
 		ADE434B01B82C4C8004C9D56 /* DeviceStatuView.m in Sources */ = {isa = PBXBuildFile; fileRef = ADE434AF1B82C4C8004C9D56 /* DeviceStatuView.m */; };
 		BF27F5FC1C3A720700DF2278 /* TKAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = BF27F5FB1C3A720700DF2278 /* TKAlertView.m */; };
+		ED1CF5245330A8E6C8957216 /* Pods_ThermoTimer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AF0046614E30B6255A1CE3A /* Pods_ThermoTimer.framework */; };
 		EE0FEB571DEF06C7007B72B1 /* DataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0FEB561DEF06C7007B72B1 /* DataManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1435AD603CD71289C7B55550 /* Pods-ThermoTimer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ThermoTimer.debug.xcconfig"; path = "Target Support Files/Pods-ThermoTimer/Pods-ThermoTimer.debug.xcconfig"; sourceTree = "<group>"; };
+		5AF0046614E30B6255A1CE3A /* Pods_ThermoTimer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ThermoTimer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD058F6323680A7C007D1892 /* NSData+Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+Utils.h"; sourceTree = "<group>"; };
 		AD058F6423680A7C007D1892 /* NSData+Utils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+Utils.m"; sourceTree = "<group>"; };
 		AD0E764A1B7DB98A0094B6B5 /* PNLineChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PNLineChartView.h; sourceTree = "<group>"; };
@@ -473,9 +475,6 @@
 		ADB0CAA61BE8844F00CC51EA /* FYChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FYChartView.m; sourceTree = "<group>"; };
 		ADB0CAA81BE88FE600CC51EA /* TempRecordModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TempRecordModel.h; sourceTree = "<group>"; };
 		ADB0CAA91BE88FE600CC51EA /* TempRecordModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TempRecordModel.m; sourceTree = "<group>"; };
-		ADB39B261C4886DB00A5423C /* libMobClickLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMobClickLibrary.a; sourceTree = "<group>"; };
-		ADB39B271C4886DB00A5423C /* MobClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobClick.h; sourceTree = "<group>"; };
-		ADB39B281C4886DB00A5423C /* MobClickSocialAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobClickSocialAnalytics.h; sourceTree = "<group>"; };
 		ADB39B2A1C4887E800A5423C /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		ADB39B2C1C48938700A5423C /* LogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogViewController.h; sourceTree = "<group>"; };
 		ADB39B2D1C48938700A5423C /* LogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogViewController.m; sourceTree = "<group>"; };
@@ -490,6 +489,7 @@
 		ADE434AF1B82C4C8004C9D56 /* DeviceStatuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceStatuView.m; sourceTree = "<group>"; };
 		ADE7E8461CB391650049FB17 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		ADE7E8471CB3916D0049FB17 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B7D4E033EB040427E8A8CA36 /* Pods-ThermoTimer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ThermoTimer.release.xcconfig"; path = "Target Support Files/Pods-ThermoTimer/Pods-ThermoTimer.release.xcconfig"; sourceTree = "<group>"; };
 		BF27F5FA1C3A720700DF2278 /* TKAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TKAlertView.h; sourceTree = "<group>"; };
 		BF27F5FB1C3A720700DF2278 /* TKAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TKAlertView.m; sourceTree = "<group>"; };
 		EE0FEB551DEF06C7007B72B1 /* DataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataManager.h; sourceTree = "<group>"; };
@@ -502,13 +502,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				ADB39B2B1C4887E800A5423C /* libz.tbd in Frameworks */,
-				ADB39B291C4886DB00A5423C /* libMobClickLibrary.a in Frameworks */,
+				ED1CF5245330A8E6C8957216 /* Pods_ThermoTimer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		55FC4FA4B14AE7EF2ABB7549 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1435AD603CD71289C7B55550 /* Pods-ThermoTimer.debug.xcconfig */,
+				B7D4E033EB040427E8A8CA36 /* Pods-ThermoTimer.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		AD0E76491B7DB98A0094B6B5 /* PNLineChart */ = {
 			isa = PBXGroup;
 			children = (
@@ -541,6 +550,7 @@
 				AD4CB85E1B78742B0036FF69 /* Frameworks */,
 				AD4CB63C1B784CDD0036FF69 /* ThermoTimerTests */,
 				AD4CB6211B784CDD0036FF69 /* Products */,
+				55FC4FA4B14AE7EF2ABB7549 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -760,7 +770,6 @@
 		AD4CB69F1B7873E10036FF69 /* Vendors */ = {
 			isa = PBXGroup;
 			children = (
-				ADB39B251C4886DB00A5423C /* UMAnalytics_Sdk_3.6.6 */,
 				ADB0CAA41BE8844F00CC51EA /* FYChartView */,
 				AD0E76491B7DB98A0094B6B5 /* PNLineChart */,
 				AD1A3ADC1B7C81A6009177A4 /* TMCache */,
@@ -1017,6 +1026,7 @@
 			isa = PBXGroup;
 			children = (
 				ADB39B2A1C4887E800A5423C /* libz.tbd */,
+				5AF0046614E30B6255A1CE3A /* Pods_ThermoTimer.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1111,16 +1121,6 @@
 			path = FYChartView;
 			sourceTree = "<group>";
 		};
-		ADB39B251C4886DB00A5423C /* UMAnalytics_Sdk_3.6.6 */ = {
-			isa = PBXGroup;
-			children = (
-				ADB39B261C4886DB00A5423C /* libMobClickLibrary.a */,
-				ADB39B271C4886DB00A5423C /* MobClick.h */,
-				ADB39B281C4886DB00A5423C /* MobClickSocialAnalytics.h */,
-			);
-			path = UMAnalytics_Sdk_3.6.6;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1128,6 +1128,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AD4CB6431B784CDD0036FF69 /* Build configuration list for PBXNativeTarget "ThermoTimer" */;
 			buildPhases = (
+				5E4F82A46CC4756F6A9C1DDF /* [CP] Check Pods Manifest.lock */,
 				AD4CB61C1B784CDD0036FF69 /* Sources */,
 				AD4CB61D1B784CDD0036FF69 /* Frameworks */,
 				AD4CB61E1B784CDD0036FF69 /* Resources */,
@@ -1220,6 +1221,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5E4F82A46CC4756F6A9C1DDF /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ThermoTimer-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AD4CB61C1B784CDD0036FF69 /* Sources */ = {
@@ -1519,6 +1545,7 @@
 		};
 		AD4CB6441B784CDD0036FF69 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1435AD603CD71289C7B55550 /* Pods-ThermoTimer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1566,6 +1593,7 @@
 		};
 		AD4CB6451B784CDD0036FF69 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B7D4E033EB040427E8A8CA36 /* Pods-ThermoTimer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;

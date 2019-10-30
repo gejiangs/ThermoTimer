@@ -35,7 +35,7 @@
     [self.view addSubview:leftBarButton];
     [leftBarButton makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(10);
-        make.top.equalTo(30);
+        make.top.equalTo(iPhoneX_Device ? 54 : 30);
     }];
 }
 

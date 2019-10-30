@@ -174,12 +174,6 @@
     
 //    NSLog(@"收到的数据：%@",characteristic.value);
     NSString *receiveString = [characteristic.value hexToString];
-    receiveString = [receiveString stringByReplacingOccurrencesOfString:@" " withString:@""];
-    receiveString = [receiveString stringByReplacingOccurrencesOfString:@"<" withString:@""];
-    receiveString = [receiveString stringByReplacingOccurrencesOfString:@">" withString:@""];
-    
-    Byte data[255];
-    [characteristic.value getBytes:data range:NSMakeRange(0, characteristic.value.length)];
     
     //连接成功后，设备返回指令
     if ([receiveString hasPrefix:@"a0"]) {
@@ -204,7 +198,6 @@
         height      = height * 255;//0x01 0x01表示256，所以高位需要*255
         CGFloat temp = [[NSString stringWithFormat:@"%d.%d", height+low, decimal] floatValue];
         temp = isPlus ? temp : -temp;   //正负
-        
         
         if ([SystemManager shareManager].currentDeviceType == DeviceTypeOne){
             
@@ -255,13 +248,16 @@
     //单通道
     else if([receiveString hasPrefix:@"20"]){
         
+        NSString *s1 = [receiveString substringWithRange:NSMakeRange(2, 2)];
+        NSString *s2 = [receiveString substringWithRange:NSMakeRange(4, 2)];
+        
         BOOL isNormal = YES;
         //低电量
-        if (data[1] == 0xba && data[2] == 0x01) {
+        if ([s1 isEqualToString:@"ba"] && [s2 isEqualToString:@"01"]) {
             isNormal = NO;
         }
         //正常电量
-        else if (data[1] == 0xba && data[2] == 0x00) {
+        else if ([s1 isEqualToString:@"ba"] && [s2 isEqualToString:@"00"]) {
             isNormal = YES;
         }
         if (self.updateDeviceBatteryBlock) {

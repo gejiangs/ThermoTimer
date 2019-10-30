@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "MobClick.h"
+#import "UMMobClick/MobClick.h"
 #import <AVFoundation/AVFoundation.h>
 
 @interface AppDelegate ()
@@ -22,10 +22,10 @@
 
 - (void)umengTrack
 {
-    [MobClick setLogEnabled:YES];  // 打开友盟sdk调试，注意Release发布时需要注释掉此行,减少io消耗
-    [MobClick setAppVersion:XcodeAppVersion]; //参数为NSString * 类型,自定义app版本信息，如果不设置，默认从CFBundleVersion里取
-    //
-    [MobClick startWithAppkey:@"5704b1a067e58e6c38001654" reportPolicy:(ReportPolicy) REALTIME channelId:nil];
+    UMConfigInstance.appKey = UmengAppkey;
+    UMConfigInstance.channelId = @"App Store";
+    [MobClick setAppVersion:AppVersionNumber];
+    [MobClick startWithConfigure:UMConfigInstance];//配置以上参数后调用此方法初始化SDK！    
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {

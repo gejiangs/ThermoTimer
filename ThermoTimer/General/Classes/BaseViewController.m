@@ -50,7 +50,7 @@
     [self.view addSubview:self.topImageView];
     [self.topImageView makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.offset(0);
-        make.top.offset(20);
+        make.top.offset(iPhoneX_Device ? 44 : 20);
         make.height.offset(63);
     }];
     

@@ -39,6 +39,12 @@
 #define IOSVersion                          [[[UIDevice currentDevice] systemVersion] floatValue]
 #define IsiOS7Later                         (IOSVersion >= 7.0)
 #define IsiOS8Later                         (IOSVersion >= 8.0)
+#define iPhoneX_Device \
+({BOOL isPhoneX = NO;\
+if (@available(iOS 11.0, *)) {\
+isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bottom > 0.0;\
+}\
+(isPhoneX);})
 
 #define Size(w, h)                          CGSizeMake(w, h)
 #define Point(x, y)                         CGPointMake(x, y)
