@@ -171,9 +171,10 @@
     WEAKSELF
     self.moreView = [[BottomMoreView alloc] init];
     _moreView.RowSelectedIndex = ^(NSInteger selectedIndex){
-        [weakSelf pushMoreViewControllerWithIndex:selectedIndex];
+        STRONGSELF
+        [strongSelf pushMoreViewControllerWithIndex:selectedIndex];
         
-        weakSelf.moreView = nil;
+        strongSelf.moreView = nil;
     };
     [_moreView showInView:self.view];
 }

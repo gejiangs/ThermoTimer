@@ -59,7 +59,8 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#define WEAKSELF __weak __typeof(self)      weakSelf = self;
+#define WEAKSELF                            __weak __typeof(self)      weakSelf = self;
+#define STRONGSELF                          __strong    __typeof(weakSelf)  strongSelf = weakSelf;
 
 
 #define LanguageKey(k)                      NSLocalizedString(k,nil);
