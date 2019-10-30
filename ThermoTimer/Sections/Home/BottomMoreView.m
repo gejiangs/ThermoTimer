@@ -250,7 +250,7 @@
         make.height.offset(Table_Row_Height*(self.rowCount+1));
         make.centerX.equalTo(self);
         if (isShow) {
-            make.bottom.equalTo(self).offset(0);
+            make.bottom.equalTo(self).offset(iPhoneX_Device ? -20 : 0);
         }else{
             make.bottom.equalTo(self).offset(Table_Row_Height * self.rowCount);
         }

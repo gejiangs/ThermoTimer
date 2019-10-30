@@ -66,10 +66,21 @@
     [_moreButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_moreButton makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view);
-        make.bottom.offset(0);
+        make.bottom.offset(iPhoneX_Device ? -20 : 0);
         make.height.offset(40);
         make.width.offset(200);
     }];
+    if (iPhoneX_Device) {
+        UIView *bottomLineView = [UIView new];
+        bottomLineView.backgroundColor = [UIColor colorWithHexString:@"#818285"];
+        [self.view addSubview:bottomLineView];
+        [bottomLineView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.width.offset(200);
+            make.bottom.offset(0);
+            make.centerX.equalTo(self.view);
+            make.height.offset(20);
+        }];
+    }
 }
 
 - (void)resetBackBarButton
