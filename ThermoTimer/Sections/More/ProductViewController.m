@@ -54,7 +54,7 @@
     [self.view addSubview:self.scrollView];
     [_scrollView makeConstraints:^(MASConstraintMaker *make) {
         make.left.bottom.right.offset(0);
-        make.top.offset(100);
+        make.top.offset(iPhoneX_Device ? 124 : 100);
     }];
     
     

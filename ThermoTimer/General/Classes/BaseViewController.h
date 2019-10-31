@@ -14,6 +14,7 @@
 @property (nonatomic, strong)   UIButton *moreButton;
 @property (nonatomic, strong)   UIImageView *topImageView;
 
+-(void)viewWillBack;
 -(void)pushViewControllerName:(NSString *)VCName;
 -(void)pushViewControllerName:(NSString *)VCName animated:(BOOL)animated;
 

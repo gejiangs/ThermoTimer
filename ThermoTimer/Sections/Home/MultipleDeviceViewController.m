@@ -18,7 +18,6 @@
 
 @interface MultipleDeviceViewController ()
 
-@property (weak, nonatomic) IBOutlet UIButton *backButton;
 @property (nonatomic, assign)   NSInteger editIndex;
 @property (nonatomic, strong)   NSMutableArray *foods;
 
@@ -42,12 +41,23 @@
 {
     self.editIndex = -1;
     
-    [self.view bringSubviewToFront:self.backButton];
     self.topImageView.hidden = NO;
     
     [self setTableViewStyle:UITableViewStyleGrouped];
     [self.tableView updateConstraints:^(MASConstraintMaker *make) {
-        make.top.offset(130);
+        make.top.offset(iPhoneX_Device ? 154 : 130);
+    }];
+    
+    UIButton *leftBarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftBarButton.frame = CGRectMake(0, 0, 40, 40);
+    leftBarButton.alpha = 0.5f;
+    [leftBarButton setImage:[UIImage imageNamed:@"btn_return"] forState:UIControlStateNormal];
+    
+    [leftBarButton addTarget:self action:@selector(viewWillBack) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:leftBarButton];
+    [leftBarButton makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(10);
+        make.top.equalTo(iPhoneX_Device ? 54 : 30);
     }];
     
     self.foods = [[DataManager shareManager] getMultipleFoodmodels];

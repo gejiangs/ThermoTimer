@@ -23,7 +23,6 @@
 
 @interface TempCurveViewController ()<FYChartViewDataSource,FYChartViewDelegate>
 
-@property (weak, nonatomic) IBOutlet UIButton *backButton;
 @property (strong, nonatomic)  UIView *dataView;
 @property (strong, nonatomic)  UILabel *numberLabel;
 @property (strong, nonatomic)  UILabel *tipLabel;
@@ -162,7 +161,6 @@
 
 -(void)initUI
 {
-    [self.view bringSubviewToFront:self.backButton];
     self.tableView.backgroundColor = [UIColor whiteColor];
     [self.tableView updateConstraints:^(MASConstraintMaker *make) {
         make.top.offset(130);
@@ -173,6 +171,17 @@
     
     self.topImageView.hidden = NO;
     
+    UIButton *leftBarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftBarButton.frame = CGRectMake(0, 0, 40, 40);
+    leftBarButton.alpha = 0.5f;
+    [leftBarButton setImage:[UIImage imageNamed:@"btn_return"] forState:UIControlStateNormal];
+    
+    [leftBarButton addTarget:self action:@selector(viewWillBack) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:leftBarButton];
+    [leftBarButton makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(10);
+        make.top.equalTo(iPhoneX_Device ? 54 : 30);
+    }];
 }
 
 -(UIView *)tableHeaderView

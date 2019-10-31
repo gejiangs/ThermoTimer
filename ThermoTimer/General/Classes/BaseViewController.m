@@ -105,12 +105,19 @@
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
+//
+//-(void)viewWillAppear:(BOOL)animated
+//{
+//    [super viewWillAppear:animated];
+//
+//    [self.view bringSubviewToFront:self.moreView];
+//}
 
--(void)viewWillAppear:(BOOL)animated
+-(void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
+    [super viewDidAppear:animated];
     
-    [self.view bringSubviewToFront:self.moreView];
+    [self.view bringSubviewToFront:self.moreButton];
 }
 
 -(void)pushViewControllerName:(NSString *)VCName

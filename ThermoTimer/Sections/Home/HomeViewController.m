@@ -54,7 +54,7 @@
     
     [self setTableViewStyle:UITableViewStyleGrouped];
     [self.tableView updateConstraints:^(MASConstraintMaker *make) {
-        make.top.offset(100);
+        make.top.offset(iPhoneX_Device ? 124 : 100);
     }];
     
 //    WEAKSELF

@@ -125,11 +125,8 @@
 		AD4CB87F1B78779E0036FF69 /* TimerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AD4CB87D1B78779E0036FF69 /* TimerViewController.xib */; };
 		AD4CB8821B788DB60036FF69 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AD4CB8841B788DB60036FF69 /* Localizable.strings */; };
 		AD4CB88C1B7897550036FF69 /* SingleDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD4CB88A1B7897550036FF69 /* SingleDeviceViewController.m */; };
-		AD4CB88D1B7897550036FF69 /* SingleDeviceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AD4CB88B1B7897550036FF69 /* SingleDeviceViewController.xib */; };
 		AD4CB8911B7897920036FF69 /* MultipleDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD4CB88F1B7897920036FF69 /* MultipleDeviceViewController.m */; };
-		AD4CB8921B7897920036FF69 /* MultipleDeviceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AD4CB8901B7897920036FF69 /* MultipleDeviceViewController.xib */; };
 		AD4CB8961B789F3A0036FF69 /* TempCurveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD4CB8941B789F3A0036FF69 /* TempCurveViewController.m */; };
-		AD4CB8971B789F3A0036FF69 /* TempCurveViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AD4CB8951B789F3A0036FF69 /* TempCurveViewController.xib */; };
 		AD4CB89A1B78A1300036FF69 /* BluetoothManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AD4CB8991B78A1300036FF69 /* BluetoothManager.m */; };
 		AD4ED72F1B841C4000EFA4B6 /* ByteUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AD4ED72E1B841C4000EFA4B6 /* ByteUtil.m */; };
 		AD52B56E1B7AF4930018E374 /* FoodChoiceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD52B56C1B7AF4930018E374 /* FoodChoiceViewController.m */; };
@@ -419,13 +416,10 @@
 		AD4CB8881B788F770036FF69 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AD4CB8891B7897550036FF69 /* SingleDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingleDeviceViewController.h; sourceTree = "<group>"; };
 		AD4CB88A1B7897550036FF69 /* SingleDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SingleDeviceViewController.m; sourceTree = "<group>"; };
-		AD4CB88B1B7897550036FF69 /* SingleDeviceViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SingleDeviceViewController.xib; sourceTree = "<group>"; };
 		AD4CB88E1B7897920036FF69 /* MultipleDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultipleDeviceViewController.h; sourceTree = "<group>"; };
 		AD4CB88F1B7897920036FF69 /* MultipleDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultipleDeviceViewController.m; sourceTree = "<group>"; };
-		AD4CB8901B7897920036FF69 /* MultipleDeviceViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultipleDeviceViewController.xib; sourceTree = "<group>"; };
 		AD4CB8931B789F3A0036FF69 /* TempCurveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TempCurveViewController.h; sourceTree = "<group>"; };
 		AD4CB8941B789F3A0036FF69 /* TempCurveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TempCurveViewController.m; sourceTree = "<group>"; };
-		AD4CB8951B789F3A0036FF69 /* TempCurveViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TempCurveViewController.xib; sourceTree = "<group>"; };
 		AD4CB8981B78A1300036FF69 /* BluetoothManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BluetoothManager.h; sourceTree = "<group>"; };
 		AD4CB8991B78A1300036FF69 /* BluetoothManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BluetoothManager.m; sourceTree = "<group>"; };
 		AD4ED72D1B841C4000EFA4B6 /* ByteUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ByteUtil.h; sourceTree = "<group>"; };
@@ -1069,19 +1063,16 @@
 				AD4B11D91B79DA7500F13F41 /* BottomMoreView.m */,
 				AD4CB88E1B7897920036FF69 /* MultipleDeviceViewController.h */,
 				AD4CB88F1B7897920036FF69 /* MultipleDeviceViewController.m */,
-				AD4CB8901B7897920036FF69 /* MultipleDeviceViewController.xib */,
 				AD4B45691B7AED4C00C11B2C /* MultipleDeviceCell.h */,
 				AD4B456A1B7AED4C00C11B2C /* MultipleDeviceCell.m */,
 				AD4B456B1B7AED4C00C11B2C /* MultipleDeviceCell.xib */,
 				AD4CB8891B7897550036FF69 /* SingleDeviceViewController.h */,
 				AD4CB88A1B7897550036FF69 /* SingleDeviceViewController.m */,
-				AD4CB88B1B7897550036FF69 /* SingleDeviceViewController.xib */,
 				AD980A7E1B81B4640008110E /* SingleDeviceCell.h */,
 				AD980A7F1B81B4640008110E /* SingleDeviceCell.m */,
 				AD980A801B81B4640008110E /* SingleDeviceCell.xib */,
 				AD4CB8931B789F3A0036FF69 /* TempCurveViewController.h */,
 				AD4CB8941B789F3A0036FF69 /* TempCurveViewController.m */,
-				AD4CB8951B789F3A0036FF69 /* TempCurveViewController.xib */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -1194,7 +1185,6 @@
 			files = (
 				ADC8B9B01C7FF1F5009FDD61 /* 无声.mp3 in Resources */,
 				AD980A7D1B818BB70008110E /* DeviceSearchCell.xib in Resources */,
-				AD4CB8921B7897920036FF69 /* MultipleDeviceViewController.xib in Resources */,
 				ADD7440F1DD45AF30077BC99 /* Readme.txt in Resources */,
 				AD757E201C1EAC2A00A77733 /* ring_7.mp3 in Resources */,
 				AD45AB031C02C57600595468 /* OperationCell.xib in Resources */,
@@ -1204,7 +1194,6 @@
 				AD4CB6341B784CDD0036FF69 /* LaunchScreen.xib in Resources */,
 				AD757E221C1EAC2A00A77733 /* ring_13.mp3 in Resources */,
 				AD4CB6311B784CDD0036FF69 /* Images.xcassets in Resources */,
-				AD4CB8971B789F3A0036FF69 /* TempCurveViewController.xib in Resources */,
 				AD980A821B81B4640008110E /* SingleDeviceCell.xib in Resources */,
 				AD4B456D1B7AED4C00C11B2C /* MultipleDeviceCell.xib in Resources */,
 				AD4CB8821B788DB60036FF69 /* Localizable.strings in Resources */,
@@ -1212,7 +1201,6 @@
 				AD757E1F1C1EAC2A00A77733 /* ring_6.mp3 in Resources */,
 				AD7D8EF21C80240C004440F1 /* MJRefresh.bundle in Resources */,
 				AD4CB87F1B78779E0036FF69 /* TimerViewController.xib in Resources */,
-				AD4CB88D1B7897550036FF69 /* SingleDeviceViewController.xib in Resources */,
 				AD52B5741B7AF53C0018E374 /* FoodCell.xib in Resources */,
 				AD52B56F1B7AF4930018E374 /* FoodChoiceViewController.xib in Resources */,
 				AD757E211C1EAC2A00A77733 /* ring_8.mp3 in Resources */,
