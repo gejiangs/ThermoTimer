@@ -7,3 +7,5 @@
 */
 
 "CFBundleDisplayName" = "Thermo&Timer";
+"NSBluetoothPeripheralUsageDescription" = "Bluetooth darf eine ordnungsgemäße Verbindung zum Gerät herstellen.";
+"NSBluetoothAlwaysUsageDescription" = "Bluetooth darf eine ordnungsgemäße Verbindung zum Gerät herstellen.";

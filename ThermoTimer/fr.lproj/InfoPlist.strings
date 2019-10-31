@@ -7,3 +7,5 @@
 */
 
 "CFBundleDisplayName" = "Thermo&Chronométreur";
+"NSBluetoothPeripheralUsageDescription" = "Bluetooth est autorisé à se connecter correctement à l'appareil.";
+"NSBluetoothAlwaysUsageDescription" = "Bluetooth est autorisé à se connecter correctement à l'appareil.";

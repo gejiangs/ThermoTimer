@@ -7,3 +7,5 @@
 */
 
 "CFBundleDisplayName" = "Thermo&Timer";
+"NSBluetoothPeripheralUsageDescription" = "Bluetoothはデバイスに適切に接続できます.";
+"NSBluetoothAlwaysUsageDescription" = "Bluetoothはデバイスに適切に接続できます.";

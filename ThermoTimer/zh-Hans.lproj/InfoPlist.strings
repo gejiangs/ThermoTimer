@@ -7,3 +7,5 @@
 */
 
 "CFBundleDisplayName" = "温度计&计时器";
+"NSBluetoothPeripheralUsageDescription" = "允许使用蓝牙才能才能正常连接设备";
+"NSBluetoothAlwaysUsageDescription" = "允许使用蓝牙才能才能正常连接设备";
