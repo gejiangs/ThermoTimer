@@ -8,10 +8,12 @@
 
 #import "BaseViewController.h"
 #import "BottomMoreView.h"
+#import "HomeViewController.h"
 
 @interface BaseViewController ()
 
 @property (nonatomic, strong)   BottomMoreView *moreView;
+@property (nonatomic, strong)   UIView *bottomLineView;
 
 @end
 
@@ -61,26 +63,25 @@
         make.top.offset(12);
     }];
     
+    self.bottomLineView = [UIView new];
+    _bottomLineView.backgroundColor = [UIColor colorWithHexString:@"#818285"];
+    [self.view addSubview:_bottomLineView];
+    [_bottomLineView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.offset(200);
+        make.bottom.offset(iPhoneX_Device ? 0 : 20);
+        make.centerX.equalTo(self.view);
+        make.height.offset(20);
+    }];
+    
     self.moreButton = [self.view addButtonWithTitle:NSLocalizedString(@"MoreTitle", nil) target:self action:@selector(moreAction)];
     [_moreButton setBackgroundImage:[UIImage imageNamed:@"home_btn_down"] forState:UIControlStateNormal];
     [_moreButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_moreButton makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view);
-        make.bottom.offset(iPhoneX_Device ? -20 : 0);
+        make.bottom.equalTo(self.bottomLineView.mas_top).offset(0);
         make.height.offset(40);
         make.width.offset(200);
     }];
-    if (iPhoneX_Device) {
-        UIView *bottomLineView = [UIView new];
-        bottomLineView.backgroundColor = [UIColor colorWithHexString:@"#818285"];
-        [self.view addSubview:bottomLineView];
-        [bottomLineView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.width.offset(200);
-            make.bottom.offset(0);
-            make.centerX.equalTo(self.view);
-            make.height.offset(20);
-        }];
-    }
 }
 
 - (void)resetBackBarButton
@@ -170,13 +171,18 @@
 
 -(void)setMoreViewHidden:(BOOL)hidden
 {
-//    self.moreButton.hidden = hidden;
+    self.moreButton.hidden = hidden;
+    self.bottomLineView.hidden = hidden;
 }
 
 -(void)moreAction
 {
     WEAKSELF
-    self.moreView = [[BottomMoreView alloc] init];
+    if ([self isKindOfClass:[HomeViewController class]]) {
+        self.moreView = [[BottomMoreView alloc] initWithIsHome:YES];
+    }else{
+        self.moreView = [[BottomMoreView alloc] init];
+    }
     _moreView.RowSelectedIndex = ^(NSInteger selectedIndex){
         STRONGSELF
         [strongSelf pushMoreViewControllerWithIndex:selectedIndex];

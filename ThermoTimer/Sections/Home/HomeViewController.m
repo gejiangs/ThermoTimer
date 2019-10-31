@@ -34,7 +34,6 @@
     [[BluetoothManager shareManager] initCentral];
     
     [self initUI];
-    [self setMoreViewHidden:YES];
     
 }
 
@@ -256,7 +255,7 @@
 
 -(void)pushMoreViewControllerWithIndex:(NSInteger)index
 {
-    NSArray *VCNames = @[@"SettingViewController", @"OperationViewController", @"", @"AboutViewController"];
+    NSArray *VCNames = @[@"FoodChoiceViewController", @"OperationViewController", @"", @"AboutViewController"];
     if (index == 2) {
         [self startScanBluetooth];
         return;
