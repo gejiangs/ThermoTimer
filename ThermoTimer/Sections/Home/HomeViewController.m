@@ -114,13 +114,8 @@
 -(void)reSearchClicked:(UIButton *)sender
 {
     if (![[BluetoothManager shareManager] supportHardware]) {
-        NSArray *titles = @[[Language key:@"Cancel"], [Language key:@"OpenBlue"]];
-        [UIAlertView showTitle:[self languageKey:@"Tip"] message:[self languageKey:@"BlueNotOpenTip"] buttonTitles:titles block:^(NSInteger buttonIndex) {
-            if (buttonIndex == 1) {
-                //打开蓝牙设置界面
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"prefs:root=Bluetooth"]];
-            }
-        }];
+        NSArray *titles = @[[Language key:@"OK"]];
+        [UIAlertView showTitle:[self languageKey:@"Tip"] message:[self languageKey:@"BlueNotOpenTip"] buttonTitles:titles block:nil];
     }else{
         [self startScanBluetooth];
     }
@@ -255,9 +250,9 @@
 
 -(void)pushMoreViewControllerWithIndex:(NSInteger)index
 {
-    NSArray *VCNames = @[@"FoodChoiceViewController", @"OperationViewController", @"", @"AboutViewController"];
+    NSArray *VCNames = @[@"SettingViewController", @"OperationViewController", @"", @"AboutViewController"];
     if (index == 2) {
-        [self startScanBluetooth];
+        [self reSearchClicked:nil];
         return;
     }
     [self pushViewControllerName:[VCNames objectAtIndex:index] animated:YES];
