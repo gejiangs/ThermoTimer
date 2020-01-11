@@ -149,7 +149,8 @@
         for(CBCharacteristic *characteristic in service.characteristics){
             if (characteristic.properties == CBCharacteristicPropertyWrite) {
                 [self.peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
-                break;
+            }else if (characteristic.properties == CBCharacteristicPropertyWriteWithoutResponse){
+                [self.peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithoutResponse];
             }
         }
     }
@@ -172,7 +173,7 @@
         return;
     }
     
-//    NSLog(@"收到的数据：%@",characteristic.value);
+    NSLog(@"收到的数据：%@",characteristic.value);
     NSString *receiveString = [characteristic.value hexToString];
     
     //连接成功后，设备返回指令

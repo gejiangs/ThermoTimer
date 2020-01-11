@@ -289,7 +289,7 @@
     NSLog(@"服务：%@",service.UUID);
     for (CBCharacteristic *characteristic in service.characteristics)
     {
-        if (characteristic.properties == CBCharacteristicPropertyNotify) {
+        if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@"FFF2"]]) {
             [peripheral setNotifyValue:YES forCharacteristic:characteristic];
         }
         if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@"FFF1"]]) {
